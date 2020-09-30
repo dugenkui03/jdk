@@ -82,6 +82,9 @@ import java.util.function.UnaryOperator;
  * terminal operation is initiated, and source elements are consumed only
  * as needed.
  *
+ * fixme
+ *      操作分为 intermediate 和 terminal 两种，只有遇到后者、真个流中的操作才会真正执行
+ *
  * <p>A stream implementation is permitted significant latitude in optimizing
  * the computation of the result.  For example, a stream implementation is free
  * to elide operations (or entire stages) from a stream pipeline -- and
