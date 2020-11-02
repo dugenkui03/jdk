@@ -33,3 +33,5 @@ docs/_build/
 gen
 src/utils/LogCompilation/target/*
 src/utils/LogCompilation/target
+src/utils/LogCompilation
+src/utils/LogCompilation/*
