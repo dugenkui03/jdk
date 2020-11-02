@@ -31,3 +31,5 @@ docs/_build/
 \.settings/
 /.nb-gradle/
 gen
+src/utils/LogCompilation/target/*
+src/utils/LogCompilation/target
