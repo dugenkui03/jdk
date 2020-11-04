@@ -46,6 +46,8 @@ public interface BiConsumer<T, U> {
 
     /**
      * Performs this operation on the given arguments.
+     * 消费者：没有反馈、返回值。 xxConsumer都没有返回值。
+     *
      *
      * @param t the first input argument
      * @param u the second input argument

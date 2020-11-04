@@ -1578,29 +1578,49 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
         }
     }
 
-    /** Recursively constructs a tree of completions. */
+    /**
+     * Recursively constructs a tree of completions.
+     *
+     * 递归的构造一个 completion 树。
+     */
     static CompletableFuture<Void> andTree(CompletableFuture<?>[] cfs,
                                            int lo, int hi) {
+        // 结果
         CompletableFuture<Void> d = new CompletableFuture<Void>();
-        if (lo > hi) // empty
+
+        // empty：下标不准确
+        if (lo > hi) {
             d.result = NIL;
+        }
+        // 正常逻辑
         else {
-            CompletableFuture<?> a, b; Object r, s, z; Throwable x;
+            CompletableFuture<?> a, b;
+            Object r, s, z;
+            Throwable x;
+            // 取中间值，牛逼
             int mid = (lo + hi) >>> 1;
+
             if ((a = (lo == mid ? cfs[lo] :
-                      andTree(cfs, lo, mid))) == null ||
-                (b = (lo == hi ? a : (hi == mid+1) ? cfs[hi] :
-                      andTree(cfs, mid+1, hi))) == null)
+                    andTree(cfs, lo, mid))) == null ||
+                    (b = (lo == hi ? a : (hi == mid + 1) ? cfs[hi] :
+                            andTree(cfs, mid + 1, hi))) == null){
                 throw new NullPointerException();
-            if ((r = a.result) == null || (s = b.result) == null)
+            }
+
+            if ((r = a.result) == null || (s = b.result) == null){
                 a.bipush(b, new BiRelay<>(d, a, b));
+            }
+
             else if ((r instanceof AltResult
-                      && (x = ((AltResult)(z = r)).ex) != null) ||
-                     (s instanceof AltResult
-                      && (x = ((AltResult)(z = s)).ex) != null))
+                    && (x = ((AltResult) (z = r)).ex) != null) ||
+                    (s instanceof AltResult
+                            && (x = ((AltResult) (z = s)).ex) != null)){
                 d.result = encodeThrowable(x, z);
-            else
+            }
+
+            else{
                 d.result = NIL;
+            }
         }
         return d;
     }
@@ -1975,8 +1995,8 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
     }
 
     /**
-     * Returns raw result after waiting, or null if interruptible and
-     * interrupted.
+     * Returns raw result after waiting,
+     * or null if interruptible and interrupted.
      */
     private Object waitingGet(boolean interruptible) {
         Signaller q = null;
@@ -1987,8 +2007,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
                 q = new Signaller(interruptible, 0L, 0L);
                 if (Thread.currentThread() instanceof ForkJoinWorkerThread)
                     ForkJoinPool.helpAsyncBlocker(defaultExecutor(), q);
-            }
-            else if (!queued)
+            } else if (!queued)
                 queued = tryPushStack(q);
             else {
                 try {
@@ -2221,7 +2240,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * or throws an (unchecked) exception if completed exceptionally.
      *
      * fixme: 正常结束则返回结果，异常结束则抛出异常；
-     *        如果计算过程中抛出了异常、则将其包装为 非检查异常/运行时异常 CompletionException 的cause抛出。
+     *        如果计算过程中抛出了异常、则将其包装为 运行时异常CompletionException 的cause抛出。
      *
      * To better conform with the use of common functional forms,
      * if a computation involved in the completion of this
@@ -2478,9 +2497,14 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
     }
 
     /**
-     * 任务完成时、在同一个线程进一步的执行一些动作、没有有效的返回值(void)。
+     * 任务完成时：
+     *      1. 在同一个线程进一步的执行一些动作，
+     *         只有该动作执行后才返回数据、即使是{@link #whenCompleteAsync}、
+     *         因为要保证返回对象的对象已经不再 consumer 中读取/更改了。
+     *      2. 但是返回的是动作执行前的原始值;
+     *      3. 如果动作发生异常，会使得返回值也是异常结束，即使是 {@link #whenCompleteAsync}。
      *
-     * @param action  accept(T t, U u)：任务完成时执行的动作、使用完成任务的线程。
+     * @param action  void accept(T t, U u)：任务完成时执行的动作、使用完成任务的线程。
      */
     public CompletableFuture<T> whenComplete(BiConsumer<? super T, ? super Throwable> action) {
         return uniWhenCompleteStage(null, action);
@@ -2496,9 +2520,16 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
     }
 
     /**
-     *  ==================================== R apply(T t, U u)：不管是异常还是正常结束，都进一步处理 ==============================
+     *  ====================================handle() R apply(T t, U u)：不管是异常还是正常结束，都进一步处理 ==============================
      */
 
+    /**
+     *  同 whenComplete，fixme 但是会返回 bitFunction 处理后的结果。
+     *
+     * @param fn
+     * @param <U>
+     * @return
+     */
     public <U> CompletableFuture<U> handle(BiFunction<? super T, Throwable, ? extends U> fn) {
         return uniHandleStage(null, fn);
     }
@@ -2516,6 +2547,8 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
 
     /**
      * Returns this CompletableFuture.
+     *
+     * 返回当前对象。
      *
      * @return this CompletableFuture
      */
@@ -2600,6 +2633,8 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      *
      * @throws NullPointerException if the array or any of its elements are {@code null}
      *         如果数组或者任务元素为null。
+     *
+     *         其中一个任务出现问题，则任务exception会作为 CompletionException 的cause，抛出 CompletionException。
      */
     public static CompletableFuture<Void> allOf(CompletableFuture<?>... cfs) {
         return andTree(cfs, 0, cfs.length - 1);
