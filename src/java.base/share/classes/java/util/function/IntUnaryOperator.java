@@ -43,6 +43,8 @@ public interface IntUnaryOperator {
     /**
      * Applies this operator to the given operand.
      *
+     * 通过一个int、计算一个int。
+     *
      * @param operand the operand
      * @return the operator result
      */

@@ -1075,7 +1075,9 @@ public final class Unsafe {
         theInternalUnsafe.putReferenceRelease(o, offset, x);
     }
 
-    /** Ordered/Lazy version of {@link #putIntVolatile(Object, long, int)}  */
+    /**
+     * Ordered/Lazy version of {@link #putIntVolatile(Object, long, int)}
+     */
     @ForceInline
     public void putOrderedInt(Object o, long offset, int x) {
         theInternalUnsafe.putIntRelease(o, offset, x);

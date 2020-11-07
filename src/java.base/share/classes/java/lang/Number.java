@@ -51,20 +51,66 @@ package java.lang;
  * @jls 5.1.2 Widening Primitive Conversion
  * @jls 5.1.3 Narrowing Primitive Conversion
  * @since   1.0
+ *
+ * byte short int long float double
  */
 public abstract class Number implements java.io.Serializable {
+
+    /**
+     * use serialVersionUID from JDK 1.0.2 for interoperability
+     */
+    @java.io.Serial
+    private static final long serialVersionUID = -8742448824652078965L;
+
+
     /**
      * Constructor for subclasses to call.
+     *
+     * 子类调用
      */
-    public Number() {super();}
+    public Number() {
+        super();
+    }
 
     /**
      * Returns the value of the specified number as an {@code int}.
+     * 将指定的值、以int的形式返回。
      *
      * @return  the numeric value represented by this object after conversion
      *          to type {@code int}.
      */
     public abstract int intValue();
+
+
+    /**
+     * Returns the value of the specified number as a {@code byte}.
+     * int(32位) -> byte(8位)
+     *
+     * <p>This implementation returns the result of {@link #intValue} cast
+     * to a {@code byte}.
+     *
+     * @return  the numeric value represented by this object after conversion
+     *          to type {@code byte}.
+     * @since   1.1
+     */
+    public byte byteValue() {
+        return (byte)intValue();
+    }
+
+    /**
+     * Returns the value of the specified number as a {@code short}.
+     * int(32) -> short(16)
+     *
+     * <p>This implementation returns the result of {@link #intValue} cast
+     * to a {@code short}.
+     *
+     * @return  the numeric value represented by this object after conversion
+     *          to type {@code short}.
+     * @since   1.1
+     */
+    public short shortValue() {
+        return (short)intValue();
+    }
 
     /**
      * Returns the value of the specified number as a {@code long}.
@@ -89,36 +135,4 @@ public abstract class Number implements java.io.Serializable {
      *          to type {@code double}.
      */
     public abstract double doubleValue();
-
-    /**
-     * Returns the value of the specified number as a {@code byte}.
-     *
-     * <p>This implementation returns the result of {@link #intValue} cast
-     * to a {@code byte}.
-     *
-     * @return  the numeric value represented by this object after conversion
-     *          to type {@code byte}.
-     * @since   1.1
-     */
-    public byte byteValue() {
-        return (byte)intValue();
-    }
-
-    /**
-     * Returns the value of the specified number as a {@code short}.
-     *
-     * <p>This implementation returns the result of {@link #intValue} cast
-     * to a {@code short}.
-     *
-     * @return  the numeric value represented by this object after conversion
-     *          to type {@code short}.
-     * @since   1.1
-     */
-    public short shortValue() {
-        return (short)intValue();
-    }
-
-    /** use serialVersionUID from JDK 1.0.2 for interoperability */
-    @java.io.Serial
-    private static final long serialVersionUID = -8742448824652078965L;
 }
