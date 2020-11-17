@@ -37,9 +37,12 @@ package java.util.concurrent;
 
 import java.util.Collection;
 
-/** Shared implementation code for java.util.concurrent. */
+/**
+ * Shared implementation code for java.util.concurrent.
+ */
 class Helpers {
-    private Helpers() {}                // non-instantiable
+    // non-instantiable
+    private Helpers() {}
 
     /**
      * An implementation of Collection.toString() suitable for classes

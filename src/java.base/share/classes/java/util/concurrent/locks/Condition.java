@@ -176,12 +176,16 @@ import java.util.concurrent.TimeUnit;
  *
  * @since 1.5
  * @author Doug Lea
+ *
+ * fixme
+ *      1. 调用这些方法的时候、必须获取了响应的锁；
+ *      2. 但是唤醒的粒度更细了；
  */
 public interface Condition {
 
     /**
      * Causes the current thread to wait until it is signalled or {@linkplain Thread#interrupt interrupted}.
-     * 阻塞的等待、直到其他线程唤醒、或者当前线程被中断。
+     * fixme 阻塞的等待、直到其他线程唤醒、或者当前线程被中断。
      *
      * <p>The lock associated with this {@code Condition} is atomically
      * released and the current thread becomes disabled for thread scheduling
@@ -233,7 +237,7 @@ public interface Condition {
 
     /**
      * Causes the current thread to wait until it is signalled.
-     * 阻塞的等待、直到被其他线程唤醒，不可中断、即不感知中断状态。
+     * fixme 阻塞的等待、直到被其他线程唤醒，不可中断、即不感知中断状态。
      *
      * <p>The lock associated with this condition is atomically
      * released and the current thread becomes disabled for thread scheduling

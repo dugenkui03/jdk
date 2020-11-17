@@ -75,37 +75,54 @@ import java.util.Objects;
 public enum TimeUnit {
     /**
      * Time unit representing one thousandth of a microsecond.
+     *
+     * fixme 纳秒，千分之一微秒。
      */
     NANOSECONDS(TimeUnit.NANO_SCALE),
+
     /**
      * Time unit representing one thousandth of a millisecond.
+     *
+     * fixme 微秒，千分之一毫秒。
      */
     MICROSECONDS(TimeUnit.MICRO_SCALE),
+
     /**
      * Time unit representing one thousandth of a second.
+     *
+     * fixme 毫秒，千分之一秒
      */
     MILLISECONDS(TimeUnit.MILLI_SCALE),
+
     /**
      * Time unit representing one second.
+     *  fixme 1秒；
      */
     SECONDS(TimeUnit.SECOND_SCALE),
+
     /**
      * Time unit representing sixty seconds.
-     * @since 1.6
+     *
+     * fixme：一分钟，60秒
      */
     MINUTES(TimeUnit.MINUTE_SCALE),
+
     /**
      * Time unit representing sixty minutes.
-     * @since 1.6
+     *
+     * fixme 小时：60分钟
      */
     HOURS(TimeUnit.HOUR_SCALE),
+
     /**
      * Time unit representing twenty four hours.
-     * @since 1.6
+     *
+     * fixme 天：24小时
      */
     DAYS(TimeUnit.DAY_SCALE);
 
     // Scales as constants
+    // fixme 每一个时间单位与最小的纳秒关系
     private static final long NANO_SCALE   = 1L;
     private static final long MICRO_SCALE  = 1000L * NANO_SCALE;
     private static final long MILLI_SCALE  = 1000L * MICRO_SCALE;
@@ -119,7 +136,6 @@ public enum TimeUnit {
      * the units up through SECONDS. Other cases compute them, in
      * method cvt.
      */
-
     private final long scale;
     private final long maxNanos;
     private final long maxMicros;
@@ -129,6 +145,10 @@ public enum TimeUnit {
     private final int milliRatio;   // fits in 32 bits
     private final int secRatio;     // fits in 32 bits
 
+    /**
+     * fixme 时间单位
+     * @param s
+     */
     private TimeUnit(long s) {
         this.scale = s;
         this.maxNanos = Long.MAX_VALUE / s;

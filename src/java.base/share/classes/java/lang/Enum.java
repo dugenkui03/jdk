@@ -82,8 +82,8 @@ public abstract class Enum<E extends Enum<E>>
     private final String name;
 
     /**
-     * Returns the name of this enum constant, exactly as declared in its
-     * enum declaration.
+     * Returns the name of this enum constant, exactly as declared in its enum declaration.
+     * fixme 返回枚举的字符串格式。
      *
      * <b>Most programmers should use the {@link #toString} method in
      * preference to this one, as the toString method may return
@@ -112,6 +112,7 @@ public abstract class Enum<E extends Enum<E>>
      * Returns the ordinal of this enumeration constant (its position
      * in its enum declaration, where the initial constant is assigned
      * an ordinal of zero).
+     * fixme 返回枚举在定义中的下标，从0开始。
      *
      * Most programmers will have no use for this method.  It is
      * designed for use by sophisticated enum-based data structures, such
@@ -160,6 +161,7 @@ public abstract class Enum<E extends Enum<E>>
      *          enum constant.
      */
     public final boolean equals(Object other) {
+        // fixme 比较引用对象，枚举值是有限的对象。
         return this==other;
     }
 
@@ -198,6 +200,7 @@ public abstract class Enum<E extends Enum<E>>
         if (self.getClass() != other.getClass() && // optimization
             self.getDeclaringClass() != other.getDeclaringClass())
             throw new ClassCastException();
+        // fixme 比较方法比较的是 下标。
         return self.ordinal - other.ordinal;
     }
 
@@ -301,8 +304,7 @@ public abstract class Enum<E extends Enum<E>>
      *
      * @since 12
      */
-    public static final class EnumDesc<E extends Enum<E>>
-            extends DynamicConstantDesc<E> {
+    public static final class EnumDesc<E extends Enum<E>> extends DynamicConstantDesc<E> {
 
         /**
          * Constructs a nominal descriptor for the specified {@code enum} class and name.

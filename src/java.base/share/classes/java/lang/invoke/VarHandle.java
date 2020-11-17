@@ -1034,6 +1034,7 @@ public abstract class VarHandle implements Constable {
     public final native
     @MethodHandle.PolymorphicSignature
     @HotSpotIntrinsicCandidate
+    // 返回旧值。
     Object getAndSet(Object... args);
 
     /**

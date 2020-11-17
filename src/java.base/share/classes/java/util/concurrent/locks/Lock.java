@@ -176,7 +176,8 @@ public interface Lock {
      * disabled for thread scheduling purposes and lies dormant(休眠的) until the
      * lock has been acquired.
      *
-     * 尝试获取锁，如果获取不了则线程会一直阻塞休眠、直到锁可以成功获取。
+     * fixme
+     *      尝试获取锁，如果获取不了则线程会一直阻塞休眠、直到锁可以成功获取。
      *
      *
      *
@@ -192,8 +193,9 @@ public interface Lock {
     void lock();
 
     /**
-     * Acquires the lock unless the current thread is
-     * {@linkplain Thread#interrupt interrupted}.
+     * Acquires the lock unless the current thread is {@linkplain Thread#interrupt interrupted}.
+     * fixme
+     *      尝试获取锁、除非当前的线程被中断。
      *
      * <p>Acquires the lock if it is available and returns immediately.
      *
@@ -241,6 +243,8 @@ public interface Lock {
 
     /**
      * Acquires the lock only if it is free at the time of invocation.
+     * fixme
+     *     尝试获取锁并立即返回，如果失败则返回false。
      *
      * <p>Acquires the lock if it is available and returns immediately
      * with the value {@code true}.
@@ -271,6 +275,8 @@ public interface Lock {
     /**
      * Acquires the lock if it is free within the given waiting time and the
      * current thread has not been {@linkplain Thread#interrupt interrupted}.
+     * fixme
+     *      在指定的时间内尝试获取锁，如果失败则返回false、如果线程中断则抛异常。
      *
      * <p>If the lock is available this method returns immediately
      * with the value {@code true}.
@@ -330,6 +336,7 @@ public interface Lock {
 
     /**
      * Releases the lock.
+     * fixme 释放锁。
      *
      * <p><b>Implementation Considerations</b>
      *
@@ -345,6 +352,8 @@ public interface Lock {
     /**
      * Returns a new {@link Condition} instance that is bound to this
      * {@code Lock} instance.
+     * fixme
+     *      生成一个新的与此 Lock 对象相绑定的 Condition对象、可以执行等待、唤醒等方法。
      *
      * <p>Before waiting on the condition the lock must be held by the
      * current thread.

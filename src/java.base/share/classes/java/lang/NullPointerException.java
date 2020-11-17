@@ -26,6 +26,8 @@
 package java.lang;
 
 /**
+ * fixme 空指针异常是运行时异常。
+ *
  * Thrown when an application attempts to use {@code null} in a
  * case where an object is required. These include:
  * <ul>
