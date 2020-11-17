@@ -135,12 +135,16 @@ import java.util.List;
  * @since 1.5
  * @author Doug Lea
  */
-public interface ExecutorService extends Executor {
+public interface ExecutorService
+        // fixme 自带如下方法；void execute(Runnable command);
+        extends Executor {
 
     /**
      * Initiates an orderly shutdown in which previously submitted
      * tasks are executed, but no new tasks will be accepted.
      * Invocation has no additional effect if already shut down.
+     * fixme
+     *      提交的任务会被执行，但是不会在接受新的任务的提交。重复调用无啥影响。
      *
      * <p>This method does not wait for previously submitted tasks to
      * complete execution.  Use {@link #awaitTermination awaitTermination}
@@ -160,6 +164,7 @@ public interface ExecutorService extends Executor {
      * Attempts to stop all actively executing tasks, halts the
      * processing of waiting tasks, and returns a list of the tasks
      * that were awaiting execution.
+     * fixme 尝试停止所有执行的任务，停止等待任务的处理、将将其返回。
      *
      * <p>This method does not wait for actively executing tasks to
      * terminate.  Use {@link #awaitTermination awaitTermination} to
