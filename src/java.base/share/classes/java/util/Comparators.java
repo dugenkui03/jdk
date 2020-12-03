@@ -35,6 +35,7 @@ import java.util.function.ToLongFunction;
  * Package private supporting class for {@link Comparator}.
  */
 class Comparators {
+    // fixme 如果不可能发生、则抛出错误。
     private Comparators() {
         throw new AssertionError("no instances");
     }
@@ -49,6 +50,7 @@ class Comparators {
 
         @Override
         public int compare(Comparable<Object> c1, Comparable<Object> c2) {
+            // fixme 实现逻辑也很简单
             return c1.compareTo(c2);
         }
 

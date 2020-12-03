@@ -5303,6 +5303,7 @@ public class Collections {
             = new ReverseComparator();
 
         public int compare(Comparable<Object> c1, Comparable<Object> c2) {
+            // fixme 其实就是将  c1.compareTo(c2) 反过来了
             return c2.compareTo(c1);
         }
 
