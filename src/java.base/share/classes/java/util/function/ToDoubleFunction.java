@@ -41,6 +41,7 @@ public interface ToDoubleFunction<T> {
 
     /**
      * Applies this function to the given argument.
+     * 将对象转换为double.
      *
      * @param value the function argument
      * @return the function result

@@ -57,12 +57,12 @@ import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 
 /**
- * Implementations of {@link Collector} that implement various useful reduction
- * operations, such as accumulating elements into collections, summarizing
- * elements according to various criteria, etc.
+ * Implementations of {@link Collector} that implement various useful reduction(简化、转换)
+ * operations, such as accumulating(积聚) elements into collections, summarizing
+ * elements according to various criteria(准则), etc.
  *
- * <p>The following are examples of using the predefined collectors to perform
- * common mutable reduction tasks:
+ * <p>The following are examples of using the predefined(预先定义) collectors to perform
+ * common mutable(able to or tending to change 可变的; 会变的) reduction tasks:
  *
  * <pre>{@code
  * // Accumulate names into a List
@@ -70,29 +70,35 @@ import java.util.function.ToLongFunction;
  *   .map(Person::getName)
  *   .collect(Collectors.toList());
  *
+ * // fixme 将元素放在制定类型集合里边
  * // Accumulate names into a TreeSet
  * Set<String> set = people.stream()
  *   .map(Person::getName)
  *   .collect(Collectors.toCollection(TreeSet::new));
  *
+ * // fixme 转换并拼接元素
  * // Convert elements to strings and concatenate them, separated by commas
  * String joined = things.stream()
  *   .map(Object::toString)
  *   .collect(Collectors.joining(", "));
  *
+ * // 对流中的元素进行聚合计算
  * // Compute sum of salaries of employee
  * int total = employees.stream()
  *   .collect(Collectors.summingInt(Employee::getSalary));
  *
+ * // fixme 仅仅是分组
  * // Group employees by department
  * Map<Department, List<Employee>> byDept = employees.stream()
  *   .collect(Collectors.groupingBy(Employee::getDepartment));
  *
+ * // fixme 分组后进行聚合计算
  * // Compute sum of salaries by department
  * Map<Department, Integer> totalByDept = employees.stream()
  *   .collect(Collectors.groupingBy(Employee::getDepartment,
  *                                  Collectors.summingInt(Employee::getSalary)));
  *
+ *  // 将学生按照是否及格分类
  * // Partition students into passing and failing
  * Map<Boolean, List<Student>> passingFailing = students.stream()
  *   .collect(Collectors.partitioningBy(s -> s.getGrade() >= PASS_THRESHOLD));
@@ -107,15 +113,19 @@ public final class Collectors {
             = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.CONCURRENT,
                                                      Collector.Characteristics.UNORDERED,
                                                      Collector.Characteristics.IDENTITY_FINISH));
+
     static final Set<Collector.Characteristics> CH_CONCURRENT_NOID
-            = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.CONCURRENT,
-                                                     Collector.Characteristics.UNORDERED));
+            = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.CONCURRENT, Collector.Characteristics.UNORDERED));
+
     static final Set<Collector.Characteristics> CH_ID
             = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.IDENTITY_FINISH));
+
     static final Set<Collector.Characteristics> CH_UNORDERED_ID
             = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.UNORDERED,
                                                      Collector.Characteristics.IDENTITY_FINISH));
+
     static final Set<Collector.Characteristics> CH_NOID = Collections.emptySet();
+
     static final Set<Collector.Characteristics> CH_UNORDERED_NOID
             = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.UNORDERED));
 
@@ -264,10 +274,11 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} that accumulates the input elements into a
+     * Returns a {@code Collector} that accumulates(v 聚集) the input elements into a
      * new {@code List}. There are no guarantees on the type, mutability,
      * serializability, or thread-safety of the {@code List} returned; if more
      * control over the returned {@code List} is required, use {@link #toCollection(Supplier)}.
+     *
      *
      * @param <T> the type of the input elements
      * @return a {@code Collector} which collects all the input elements into a
@@ -1350,6 +1361,7 @@ public final class Collectors {
      * another {@code Collector}, and organizes them into a
      * {@code Map<Boolean, D>} whose values are the result of the downstream
      * reduction.
+     * fixme 按照断言、将流中的元素分成 true 和 false两个key里边，然后可以对各分组元素进行处理。
      *
      * <p>
      * The returned {@code Map} always contains mappings for both

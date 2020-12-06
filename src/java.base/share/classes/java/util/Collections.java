@@ -1116,6 +1116,8 @@ public class Collections {
      * The returned set will be serializable if the specified set
      * is serializable.
      *
+     * fixme 将指定的set转换为不可修改的Set。
+     *
      * @param  <T> the class of the objects in the set
      * @param  s the set for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified set.

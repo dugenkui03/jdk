@@ -110,10 +110,9 @@ public interface BaseStream<T, S extends BaseStream<T, S>>
      * Returns an equivalent stream that is sequential.  May return
      * itself, either because the stream was already sequential, or because
      * the underlying stream state was modified to be sequential.
-     * fixme 返回一个 有序的流，如果该流已经是有序的则返回自身。中间操作。
+     * fixme 中间操作：将并行流转换成串行流。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>This is an <a href="package-summary.html#StreamOps">intermediate operation</a>.
      *
      * @return a sequential stream
      */

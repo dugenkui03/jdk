@@ -312,8 +312,9 @@ public interface Collector<T, A, R> {
     }
 
     /**
-     * Characteristics indicating properties of a {@code Collector}, which can
-     * be used to optimize reduction implementations.
+     * Characteristics indicating properties of a {@code Collector},
+     * which can be used to optimize reduction implementations.
+     * fixme Characteristics表明了 Collector 的属性、可用来优化 reduction 实现。
      */
     enum Characteristics {
         /**
@@ -321,6 +322,8 @@ public interface Collector<T, A, R> {
          * the result container can support the accumulator function being
          * called concurrently with the same result container from multiple
          * threads.
+         *
+         * fixme 并行
          *
          * <p>If a {@code CONCURRENT} collector is not also {@code UNORDERED},
          * then it should only be evaluated concurrently if applied to an
@@ -332,6 +335,8 @@ public interface Collector<T, A, R> {
          * Indicates that the collection operation does not commit to preserving
          * the encounter order of input elements.  (This might be true if the
          * result container has no intrinsic order, such as a {@link Set}.)
+         *
+         * fixme 无序的
          */
         UNORDERED,
 
@@ -339,6 +344,8 @@ public interface Collector<T, A, R> {
          * Indicates that the finisher function is the identity function and
          * can be elided.  If set, it must be the case that an unchecked cast
          * from A to R will succeed.
+         *
+         * fixme "身份完成"
          */
         IDENTITY_FINISH
     }
