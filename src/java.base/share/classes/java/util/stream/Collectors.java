@@ -264,7 +264,7 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} that accumulates the input elements into a
+     * Returns a {@code Collector} that accumulates(v 聚集) the input elements into a
      * new {@code List}. There are no guarantees on the type, mutability,
      * serializability, or thread-safety of the {@code List} returned; if more
      * control over the returned {@code List} is required, use {@link #toCollection(Supplier)}.
@@ -1350,6 +1350,7 @@ public final class Collectors {
      * another {@code Collector}, and organizes them into a
      * {@code Map<Boolean, D>} whose values are the result of the downstream
      * reduction.
+     * fixme 按照断言、将流中的元素分成 true 和 false两个key里边，然后可以对各分组元素进行处理。
      *
      * <p>
      * The returned {@code Map} always contains mappings for both
