@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2010, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -42,8 +43,6 @@ public interface Function<T, R> {
 
     /**
      * Applies this function to the given argument.
-     *
-     * function都有返回值
      *
      * @param t the function argument
      * @return the function result

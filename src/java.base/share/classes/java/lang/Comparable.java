@@ -88,6 +88,7 @@ import java.util.*;
  * Java Collections Framework</a>.
  *
  * @param <T> the type of objects that this object may be compared to
+ *           fixme 当前对象用来比较的数据类型，比如person的可能就是个 int-age
  *
  * @author  Josh Bloch
  * @see java.util.Comparator

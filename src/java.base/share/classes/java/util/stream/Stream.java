@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -173,6 +174,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * Returns a stream consisting of the elements of this stream that match
      * the given predicate.
      *
+     *
      * <p>This is an <a href="package-summary.html#StreamOps">intermediate
      * operation</a>.
      *
@@ -181,6 +183,8 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      *                  predicate to apply to each element to determine if it
      *                  should be included
      * @return the new stream
+     *
+     *
      */
     Stream<T> filter(Predicate<? super T> predicate);
 
