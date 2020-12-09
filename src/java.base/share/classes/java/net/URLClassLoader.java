@@ -64,6 +64,11 @@ import sun.security.util.SecurityConstants;
  * JAR file.  Any {@code file:} scheme URL that ends with a '/' is assumed to
  * refer to a directory. Otherwise, the URL is assumed to refer to a JAR file
  * which will be opened as needed.
+ *
+ * fixme
+ *      从url指定的资源中加载类，任何 jar: 模式的url被认定为指向一个 jar文件，例如
+ *      jar:http://www.foo.com/bar/baz.jar!/COM/foo/Quux.class
+ *      任何 以 / 结尾的 file: 模式的URL，被认定指向一个文件夹。
  * <p>
  * This class loader supports the loading of classes and resources from the
  * contents of a <a href="../util/jar/JarFile.html#multirelease">multi-release</a>
