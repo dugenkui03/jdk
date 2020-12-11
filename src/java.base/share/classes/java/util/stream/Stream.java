@@ -50,6 +50,7 @@ import java.util.function.UnaryOperator;
 /**
  * fixme
  *      1. iterate 和 generate 可以高无止尽的流：前者元素之间有依赖关系，后者没有；
+ *      1. iterate 和 generate 可以搞无止尽的流：前者元素之间有依赖关系，后者没有；
  *      2. flatMap 将多个流合并为一个流;
  *      3. 一个流不能执行两次 终止操作；
  *      4. 返回流的一般是中间操作、返回其他对象的一般是终止操作。

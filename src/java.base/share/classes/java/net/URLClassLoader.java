@@ -106,9 +106,12 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
      *
      * @param      urls the URLs from which to load classes and resources
      * @param      parent the parent class loader for delegation
+     *                    委托的父类加载器；
+     *
      * @throws     SecurityException  if a security manager exists and its
      *             {@code checkCreateClassLoader} method doesn't allow
      *             creation of a class loader.
+     *
      * @throws     NullPointerException if {@code urls} or any of its
      *             elements is {@code null}.
      * @see SecurityManager#checkCreateClassLoader

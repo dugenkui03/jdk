@@ -48,11 +48,12 @@ import java.util.function.Supplier;
  * https://cloud.tencent.com/developer/article/1352540
  * https://dzone.com/articles/20-examples-of-using-javas-completablefuture
  *
- * 1. runXX 不支持返回值；CompletetableFuture<Void>;
- * 2. supplyXX 可以有返回值：CompletetableFuture<T>;
- * 3. handleXX 处理正常返回和有异常的情况；
- * 4. thenApplyXX 处理正常结束的情况；
- * 5. exceptionally 处理异常情况，并返回新值；
+ * fixme
+ *      1. runXX 不支持返回值；CompletetableFuture<Void>;
+ *      2. supplyXX 可以有返回值：CompletetableFuture<T>;
+ *      3. handleXX 处理正常返回和有异常的情况；
+ *      4. thenApplyXX 处理正常结束的情况；
+ *      5. exceptionally 处理异常情况，并返回新值；
  *
  *
  * A {@link Future} that may be explicitly completed (setting its
