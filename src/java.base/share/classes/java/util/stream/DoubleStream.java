@@ -53,6 +53,8 @@ import java.util.function.Supplier;
  * {@link Stream} and {@link DoubleStream}, computing the sum of the weights of the
  * red widgets:
  *
+ * fixme
+ *      流元素是基本类型double，如下、返回值是double而非Double
  * <pre>{@code
  *     double sum = widgets.stream()
  *                         .filter(w -> w.getColor() == RED)

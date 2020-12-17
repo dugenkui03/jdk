@@ -947,7 +947,7 @@ public class SubmissionPublisher<T> implements Publisher<T>,
     }
 
     /**
-     * A resizable array-based ring buffer with integrated control to
+     * A resizable(可变大小的时候) array-based ring buffer with integrated control to
      * start a consumer task whenever items are available.  The buffer
      * algorithm is specialized for the case of at most one concurrent
      * producer and consumer, and power of two buffer sizes. It relies

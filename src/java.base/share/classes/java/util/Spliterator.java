@@ -30,6 +30,9 @@ import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
 /**
+ * fixme https://segmentfault.com/q/1010000007087438
+ *      对比 Iterator，是对集合的并行遍历、发挥多核优势。
+ *
  * An object for traversing and partitioning elements of a source.  The source
  * of elements covered by a Spliterator could be, for example, an array, a
  * {@link Collection}, an IO channel, or a generator function.

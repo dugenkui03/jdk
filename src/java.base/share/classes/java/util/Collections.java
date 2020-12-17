@@ -151,6 +151,7 @@ public class Collections {
      * comparable</i> using the specified comparator (that is,
      * {@code c.compare(e1, e2)} must not throw a {@code ClassCastException}
      * for any elements {@code e1} and {@code e2} in the list).
+     * fixme 使用指定的比较器给list元素排序、在当前的集合中。
      *
      * <p>This sort is guaranteed to be <i>stable</i>:  equal elements will
      * not be reordered as a result of the sort.
@@ -182,12 +183,14 @@ public class Collections {
 
     /**
      * Searches the specified list for the specified object using the binary
-     * search algorithm.  The list must be sorted into ascending order
+     * search algorithm.  The list must be sorted into ascending(升序) order
      * according to the {@linkplain Comparable natural ordering} of its
      * elements (as by the {@link #sort(List)} method) prior to making this
      * call.  If it is not sorted, the results are undefined.  If the list
      * contains multiple elements equal to the specified object, there is no
      * guarantee which one will be found.
+     * fixme 在一个list中进行二分查找指定元素。
+     *       list中的元素必须是排序的；如果list中多个元素和指定元素equals、则不保证返回哪个元素。
      *
      * <p>This method runs in log(n) time for a "random access" list (which
      * provides near-constant-time positional access).  If the specified list
@@ -282,13 +285,14 @@ public class Collections {
 
     /**
      * Searches the specified list for the specified object using the binary
-     * search algorithm.  The list must be sorted into ascending order
+     * search algorithm.  The list must be sorted into ascending(升序) order
      * according to the specified comparator (as by the
      * {@link #sort(List, Comparator) sort(List, Comparator)}
      * method), prior to making this call.  If it is
      * not sorted, the results are undefined.  If the list contains multiple
      * elements equal to the specified object, there is no guarantee which one
      * will be found.
+     * fixme
      *
      * <p>This method runs in log(n) time for a "random access" list (which
      * provides near-constant-time positional access).  If the specified list
@@ -366,9 +370,10 @@ public class Collections {
     }
 
     /**
-     * Reverses the order of the elements in the specified list.<p>
+     * Reverses the order of the elements in the specified list.
+     * fixme 逆序指定列表，运行时间为log(n)。
      *
-     * This method runs in linear time.
+     * <p>This method runs in linear time.
      *
      * @param  list the list whose elements are to be reversed.
      * @throws UnsupportedOperationException if the specified list or
@@ -395,9 +400,10 @@ public class Collections {
     }
 
     /**
-     * Randomly permutes the specified list using a default source of
-     * randomness.  All permutations occur with approximately equal
-     * likelihood.
+     * Randomly permutes(排列、改变...顺序) the specified list using
+     * a default source of randomness.  All permutations(n. 排列) occur
+     * with approximately equal likelihood.
+     * fixme 打散list集合、所有排列出现的顺序相同。
      *
      * <p>The hedge "approximately" is used in the foregoing description because
      * default source of randomness is only approximately an unbiased source
@@ -451,6 +457,8 @@ public class Collections {
      *
      * @param  list the list to be shuffled.
      * @param  rnd the source of randomness to use to shuffle the list.
+     *             fixme 用来打散list的随机定义。
+     *
      * @throws UnsupportedOperationException if the specified list or its
      *         list-iterator does not support the {@code set} operation.
      */
@@ -483,6 +491,7 @@ public class Collections {
      * Swaps the elements at the specified positions in the specified list.
      * (If the specified positions are equal, invoking this method leaves
      * the list unchanged.)
+     * fixme 交换指定位置的元素。
      *
      * @param list The list in which to swap elements.
      * @param i the index of one element to be swapped.
@@ -490,6 +499,7 @@ public class Collections {
      * @throws IndexOutOfBoundsException if either {@code i} or {@code j}
      *         is out of range (i &lt; 0 || i &gt;= list.size()
      *         || j &lt; 0 || j &gt;= list.size()).
+     *         fixme 位置超过元素大小。
      * @since 1.4
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -512,9 +522,10 @@ public class Collections {
 
     /**
      * Replaces all of the elements of the specified list with the specified
-     * element. <p>
+     * element.
+     * fixme 使用指定元素填充list。
      *
-     * This method runs in linear time.
+     * <p> This method runs in linear time.
      *
      * @param  <T> the class of the objects in the list
      * @param  list the list to be filled with the specified element.
@@ -544,6 +555,7 @@ public class Collections {
      * list's size must be greater than or equal to the source list's size.
      * If it is greater, the remaining elements in the destination list are
      * unaffected. <p>
+     * fixme 将元素从源list拷贝到目标list：拷贝之后
      *
      * This method runs in linear time.
      *
