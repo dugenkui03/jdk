@@ -1794,6 +1794,7 @@ public abstract class ClassLoader {
      * parent is the bootstrap class loader.
      *
      * @return  The parent {@code ClassLoader}
+     *          fixme 获取父类加载器。
      *
      * @throws  SecurityException
      *          If a security manager is present, and the caller's class loader
@@ -1914,6 +1915,7 @@ public abstract class ClassLoader {
      * property is set to {@code true}.
      *
      * @return  The system {@code ClassLoader}
+     *          fixme 获取系统的类加载器。
      *
      * @throws  SecurityException
      *          If a security manager is present, and the caller's class loader

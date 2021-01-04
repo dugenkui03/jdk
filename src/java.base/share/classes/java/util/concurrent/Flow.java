@@ -203,6 +203,7 @@ public final class Flow {
          * invoking its {@code cancel} method.
          *
          * @param subscriber the subscriber
+         *                   订阅者
          * @throws NullPointerException if subscriber is null
          */
         public void subscribe(Subscriber<? super T> subscriber);
@@ -218,14 +219,19 @@ public final class Flow {
     public static interface Subscriber<T> {
         /**
          * Method invoked prior to invoking any other Subscriber
-         * methods for the given Subscription. If this method throws
-         * an exception, resulting behavior is not guaranteed, but may
-         * cause the Subscription not to be established or to be cancelled.
+         * methods for the given Subscription.
+         * If this method throws an exception, resulting behavior is not guaranteed,
+         * but may cause the Subscription not to be established or to be cancelled.
          *
          * <p>Typically, implementations of this method invoke {@code
          * subscription.request} to enable receiving items.
          *
+         * fixme
+         *      如果该方法抛异常则结果无法保证，而且可能造成订阅服务建立或者取消。
+         *      此方法的实现通常调用参数 subscription.request 方法来获取item信息。
+         *
          * @param subscription a new subscription
+         *                     新的订阅
          */
         public void onSubscribe(Subscription subscription);
 
@@ -233,25 +239,35 @@ public final class Flow {
          * Method invoked with a Subscription's next item.  If this
          * method throws an exception, resulting behavior is not
          * guaranteed, but may cause the Subscription to be cancelled.
+         * fixme
+         *      消费订阅的下一个元素，抛异常的时候可能会导致订阅取消。
          *
          * @param item the item
          */
         public void onNext(T item);
 
         /**
-         * Method invoked upon an unrecoverable error encountered by a
-         * Publisher or Subscription, after which no other Subscriber
-         * methods are invoked by the Subscription.  If this method
-         * itself throws an exception, resulting behavior is
-         * undefined.
+         * Method invoked upon an unrecoverable(不可恢复) error encountered by a
+         * Publisher or Subscription,
+         *
+         * todo 写反了吧？？？？？？？？
+         * after which no other Subscriber
+         * methods are invoked by the Subscription.
+         *
+         * If this method itself throws an exception, resulting behavior is undefined.
+         * fixme
+         *      当发布或者订阅遇到不可恢复的异常时、比如内存溢出，此方法被调用，
+         *      之后没有其他的 xxxx
+         *      如果此方法抛异常、则结果不再可预知。
+         *
          *
          * @param throwable the exception
          */
         public void onError(Throwable throwable);
 
         /**
-         * Method invoked when it is known that no additional
-         * Subscriber method invocations will occur for a Subscription
+         * Method invoked when it is known that
+         * no additional Subscriber method invocations will occur for a Subscription
          * that is not already terminated by error, after which no
          * other Subscriber methods are invoked by the Subscription.
          * If this method throws an exception, resulting behavior is
@@ -266,19 +282,29 @@ public final class Flow {
      * and may cancel at any time. The methods in this interface are
      * intended to be invoked only by their Subscribers; usages in
      * other contexts have undefined effects.
+     *
+     * fixme 链接 Publisher 和 Subscriber，
+     *       Subscriber只有在请求的时候接收 item，并且可以在任意时间取消。
+     *       在Subscription中的方法只应该被Subscriber调用，在其他上下文中使用有未知影响。
+     *
      */
     public static interface Subscription {
         /**
          * Adds the given number {@code n} of items to the current
          * unfulfilled demand for this subscription.  If {@code n} is
          * less than or equal to zero, the Subscriber will receive an
-         * {@code onError} signal with an {@link
+         * {@link Subscriber#onError(Throwable)} signal with an {@link
          * IllegalArgumentException} argument.  Otherwise, the
          * Subscriber will receive up to {@code n} additional {@code
          * onNext} invocations (or fewer if terminated).
+         * fixme
+         *      "将给定数量的元素添加到当前订阅为满足的需求中"。
+         *      如果n<=0，订阅者将会接受到一个带有IllegalArgumentException参数的 onError 信号。
+         *      否则，订阅者将会接受n个或小于n个 onNext 调用。
          *
-         * @param n the increment of demand; a value of {@code
-         * Long.MAX_VALUE} may be considered as effectively unbounded
+         * @param n the increment of demand(要求、需求);
+         *          a value of {@code Long.MAX_VALUE} may
+         *          be considered as effectively unbounded
          */
         public void request(long n);
 
@@ -294,9 +320,13 @@ public final class Flow {
 
     /**
      * A component that acts as both a Subscriber and Publisher.
+     * fixme 充当消费者和生产者的角色
      *
      * @param <T> the subscribed item type
+     *           fixme 订阅元素的类型
+     *
      * @param <R> the published item type
+     *           fixme 发布元素的类型
      */
     public static interface Processor<T,R> extends Subscriber<T>, Publisher<R> {
     }

@@ -49,6 +49,7 @@ import java.util.function.UnaryOperator;
 
 /**
  * fixme
+ *      1. iterate 和 generate 可以高无止尽的流：前者元素之间有依赖关系，后者没有；
  *      1. iterate 和 generate 可以搞无止尽的流：前者元素之间有依赖关系，后者没有；
  *      2. flatMap 将多个流合并为一个流;
  *      3. 一个流不能执行两次 终止操作；
@@ -56,7 +57,7 @@ import java.util.function.UnaryOperator;
  *
  * todo
  *      1. reduce和其他；
- *      2. {@link Collectors}
+ *      2. {@link java.util.stream.Collectors}
  * A sequence of elements supporting sequential and parallel aggregate
  * operations.  The following example illustrates an aggregate operation using
  * {@link Stream} and {@link IntStream}:

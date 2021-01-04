@@ -52,7 +52,7 @@ import java.util.function.Supplier;
  *      1. runXX 不支持返回值；CompletetableFuture<Void>;
  *      2. supplyXX 可以有返回值：CompletetableFuture<T>;
  *      3. handleXX 处理正常返回和有异常的情况；
- *      4. thenApplyXX 处理正常结束的情况；
+ *      4. thenApplyXX 处理正常结束的情况、并返回新值；
  *      5. exceptionally 处理异常情况，并返回新值；
  *
  *
