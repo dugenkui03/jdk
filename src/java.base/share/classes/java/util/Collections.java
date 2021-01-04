@@ -43,6 +43,9 @@ import java.util.stream.StreamSupport;
 import jdk.internal.access.SharedSecrets;
 
 /**
+ * fixme 泛型方法。
+ *       PECS：生产者extend、消费者super。
+ *
  * This class consists exclusively of static methods that operate on or return
  * collections.  It contains polymorphic algorithms that operate on
  * collections, "wrappers", which return a new collection backed by a
@@ -1021,8 +1024,11 @@ public class Collections {
      * is serializable.
      *
      * @param  <T> the class of the objects in the collection
-     * @param  c the collection for which an unmodifiable view is to be
-     *         returned.
+     *            fixme 集合中元素类型。生产者 extends。
+     *
+     * @param  c the collection for which an unmodifiable view is to be returned.
+     *           fixme 给当前集合添加不可修改视图、但是该集合还是可修改的。
+     *
      * @return an unmodifiable view of the specified collection.
      */
     public static <T> Collection<T> unmodifiableCollection(Collection<? extends T> c) {
@@ -5598,9 +5604,17 @@ public class Collections {
      * </pre>
      *
      * @param  <T> the class of the elements to add and of the collection
+     *            fixme：元素的类型。
+     *
      * @param c the collection into which {@code elements} are to be inserted
+     *          fixme：消费元素的集合、元素会插入到这个集合。
+     *
      * @param elements the elements to insert into {@code c}
+     *                 fixme 被消费的元素。
+     *
      * @return {@code true} if the collection changed as a result of the call
+     * fixme 是否添加了元素。
+     *
      * @throws UnsupportedOperationException if {@code c} does not support
      *         the {@code add} operation
      * @throws NullPointerException if {@code elements} contains one or more
