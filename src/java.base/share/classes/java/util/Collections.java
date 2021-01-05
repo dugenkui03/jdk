@@ -44,7 +44,9 @@ import jdk.internal.access.SharedSecrets;
 
 /**
  * fixme 泛型方法。
- *       PECS：生产者extend、消费者super。
+ *       PECS：生产者extend、消费者super；
+ *
+ * todo: 可以看看方法的具体实现、通熟易懂、获益匪浅。
  *
  * This class consists exclusively of static methods that operate on or return
  * collections.  It contains polymorphic algorithms that operate on
@@ -913,14 +915,18 @@ public class Collections {
      * such that {@code source.subList(i, i+target.size()).equals(target)},
      * or -1 if there is no such index.  (Returns -1 if
      * {@code target.size() > source.size()})
+     * fixme 返回子串第一次出现的位置。
      *
-     * <p>This implementation uses the "brute force" technique of scanning
+     * <p>This implementation uses the "brute force"(蛮力法) technique of scanning
      * over the source list, looking for a match with the target at each
      * location in turn.
      *
-     * @param source the list in which to search for the first occurrence
-     *        of {@code target}.
+     * @param source the list in which to search for the first occurrence of {@code target}.
+     *               fixme 全集。
+     *
      * @param target the list to search for as a subList of {@code source}.
+     *               fixme 子集。
+     *
      * @return the starting position of the first occurrence of the specified
      *         target list within the specified source list, or -1 if there
      *         is no such occurrence.
@@ -929,15 +935,24 @@ public class Collections {
     public static int indexOfSubList(List<?> source, List<?> target) {
         int sourceSize = source.size();
         int targetSize = target.size();
+        // fixme 比对到这里就该结束了，因为 source 剩下的元素小于 target.size()
         int maxCandidate = sourceSize - targetSize;
 
         if (sourceSize < INDEXOFSUBLIST_THRESHOLD ||
-            (source instanceof RandomAccess&&target instanceof RandomAccess)) {
+                // fixme 如果都是数组、即 get(i) 是o(1)操作，则使用 for_i
+                (source instanceof RandomAccess && target instanceof RandomAccess)) {
+            /**
+             * https://juejin.cn/post/6844903928828706823
+             *      break使用标签：直接退出当前标签标识的循环
+             *      continue使用标签：跳过当前标签所标识h循环的当次循环的剩余语句
+             */
         nextCand:
             for (int candidate = 0; candidate <= maxCandidate; candidate++) {
-                for (int i=0, j=candidate; i<targetSize; i++, j++)
+                for (int i=0, j=candidate; i<targetSize; i++, j++){
+                    // fixme 如果不相等、则继续外层循环
                     if (!eq(target.get(i), source.get(j)))
                         continue nextCand;  // Element mismatch, try next cand
+                }
                 return candidate;  // All elements of candidate matched target
             }
         } else {  // Iterator version of above algorithm
@@ -946,8 +961,10 @@ public class Collections {
             for (int candidate = 0; candidate <= maxCandidate; candidate++) {
                 ListIterator<?> ti = target.listIterator();
                 for (int i=0; i<targetSize; i++) {
+                    // fixme 如果不想等
                     if (!eq(ti.next(), si.next())) {
                         // Back up source iterator to next candidate
+                        // fixme 已经移动了 i 步了，将指针移动到source_iterator、重新对比的时候从第一个元素开始。
                         for (int j=0; j<i; j++)
                             si.previous();
                         continue nextCand;
@@ -1044,6 +1061,8 @@ public class Collections {
      * @return an unmodifiable view of the specified collection.
      */
     public static <T> Collection<T> unmodifiableCollection(Collection<? extends T> c) {
+        // 就是返回一个去掉了修改方法的Collection子类UnmodifiableCollection
+        // 构造参数对象是其唯一组合变量。
         return new UnmodifiableCollection<>(c);
     }
 
