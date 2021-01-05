@@ -40,8 +40,8 @@ import java.util.function.Consumer;
  *      继承此接口的方法，允许使用 for-each 方法遍历元素
  *      T：元素类型；
  *
- * todo
- *     iterator 咋用
+ * fixme
+ *     也可以通过 iterator 返回集合元素，然后通过通过Iterator中 hasNext() 和 next() 取数据。
  *
  * @since 1.5
  * @jls 14.14.2 The enhanced {@code for} statement
