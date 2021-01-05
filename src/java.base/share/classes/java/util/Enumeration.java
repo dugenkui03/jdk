@@ -28,7 +28,7 @@ package java.util;
 /**
  * An object that implements the Enumeration interface generates a
  * series of elements, one at a time. Successive calls to the
- * {@code nextElement} method return successive elements of the
+ * {@link #nextElement} method return successive elements of the
  * series.
  * <p>
  * For example, to print all elements of a {@code Vector<E>} <i>v</i>:
@@ -43,11 +43,12 @@ package java.util;
  *
  * @apiNote
  * The functionality of this interface is duplicated by the {@link Iterator}
- * interface.  In addition, {@code Iterator} adds an optional remove operation,
+ * interface.  In addition, {@link Iterator} adds an optional remove operation,
  * and has shorter method names.  New implementations should consider using
- * {@code Iterator} in preference to {@code Enumeration}. It is possible to
- * adapt an {@code Enumeration} to an {@code Iterator} by using the
+ * {@link Iterator} in preference to {@code Enumeration}. It is possible to
+ * adapt an {@link Enumeration} to an {@link Iterator} by using the
  * {@link #asIterator} method.
+ * fixme 功能同 {@link Iterator}、推荐使用Iterator、可使用{@link #asIterator}进行转换。
  *
  * @see     java.util.Iterator
  * @see     java.io.SequenceInputStream
@@ -60,6 +61,8 @@ package java.util;
  *
  * @author  Lee Boynton
  * @since   1.0
+ *
+ * Enumeration：列举、枚举
  */
 public interface Enumeration<E> {
     /**
