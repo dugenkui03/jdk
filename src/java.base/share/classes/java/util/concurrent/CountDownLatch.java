@@ -236,6 +236,9 @@ public class CountDownLatch {
      * Causes the current thread to wait until the latch has counted down to
      * zero, unless the thread is {@linkplain Thread#interrupt interrupted},
      * or the specified waiting time elapses.
+     * fixme: 在指定时间内状态归零则返回true并调度；
+     *        指定时间内没有归零则返回false并调度；
+     *        指定时间内当前线程被中断、则抛出异常。
      *
      * <p>If the current count is zero then this method returns immediately
      * with the value {@code true}.

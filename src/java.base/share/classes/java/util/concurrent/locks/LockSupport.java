@@ -180,6 +180,7 @@ public class LockSupport {
     /**
      * Disables the current thread for thread scheduling purposes unless the
      * permit is available.
+     * fixme 使用指定参数加锁、挂起当前线程。
      *
      * <p>If the permit is available then it is consumed and the call returns
      * immediately; otherwise
@@ -201,8 +202,8 @@ public class LockSupport {
      * the thread to park in the first place. Callers may also determine,
      * for example, the interrupt status of the thread upon return.
      *
-     * @param blocker the synchronization object responsible for this
-     *        thread parking
+     * @param blocker the synchronization object responsible for this thread parking
+     *
      * @since 1.6
      */
     public static void park(Object blocker) {

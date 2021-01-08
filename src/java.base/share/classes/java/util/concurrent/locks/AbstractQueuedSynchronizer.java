@@ -752,9 +752,9 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     final int acquire(Node node, // null、除非有重新获取condition
                       int arg, // "acquire"/获取 参数
                       boolean shared, // 是否是共享模式
-                      boolean interruptible, // ？？是否可中断？？
-                      boolean timed, // 是否超时
-                      long time) { // 纳秒
+                      boolean interruptible, // fixme 当前线程是否可中断
+                      boolean timed, // fixme 是否 设置了超时
+                      long time) { // fixme 超时目标值
         // 获取当前线程
         Thread current = Thread.currentThread();
 
@@ -782,7 +782,6 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
          *  检查当前节点是否是first
          *      如果是first，确认头节点稳定；否则确认有效的前置节点；
          */
-
         for (;;) {
             if (!first && (pred = (node == null) ? null : node.prev) != null &&
                 !(first = (head == pred))) {
@@ -849,13 +848,19 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
             } else {
                 long nanos;
                 spins = postSpins = (byte)((postSpins << 1) | 1);
-                if (!timed)
+
+                // 如果没有设置超时、则使用当前对象加锁、将该线程挂起来
+                if (!timed){
                     LockSupport.park(this);
+                }
+                // 如果还没有到指定的超时时间、则使用当前对象挂起当前线程指定的时间数。
                 else if ((nanos = time - System.nanoTime()) > 0L)
                     LockSupport.parkNanos(this, nanos);
+                // 如果制定了超时并且到超时时间了，则break；
                 else
                     break;
                 node.clearStatus();
+
                 if ((interrupted |= Thread.interrupted()) && interruptible)
                     break;
             }
