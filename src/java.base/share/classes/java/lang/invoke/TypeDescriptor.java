@@ -29,6 +29,8 @@ import java.util.List;
 /**
  * An entity that has a type descriptor.
  *
+ * fixme 拥有类型描述符的实体。
+ *
  * @since 12
  */
 public interface TypeDescriptor {
