@@ -46,6 +46,8 @@ import java.util.concurrent.locks.ReentrantLock;
  *       4. 其他等待的线程在 "栅栏" 上等待超时了；
  *       5. {@link #reset()} 方法被调用。
  *
+ * fixme breakBarrier 和 nextGeneration 的区别是：前者将generation.broken=true，后者将generation索引指向了新对象。
+ *
  * A synchronization aid that allows a set of threads to all wait for
  * each other to reach a common barrier point.  CyclicBarriers are
  * useful in programs involving a fixed sized party of threads that
@@ -156,7 +158,11 @@ public class CyclicBarrier {
      * There need not be an active generation if there has been a break
      * but no subsequent reset.
      *
-     * fixme 每一个对 barrier 的使用都表示一个generation。
+     * todo  每一个对 barrier 的使用都表示一个generation。
+     *       当栅栏被推到或者重置时、generation发生改变。
+     *       由于锁被分配给等待的线程的方式不确定，可以使用 栅栏 将多个generation和线程关联，
+     *       但是只有一个generation可以被激活，其他的被 broken 或者 tripped。
+     *       如果只有中断、而没有随后的set，则不需要有活跃的generation。
      *
      */
     private static class Generation {
@@ -272,7 +278,12 @@ public class CyclicBarrier {
     }
 
     /**
-     * fixme 直接将等待状态设置为饱和状态。
+     * fixme 异常中断或者重置的时候才会调用 breakBarrier
+     *       1. doawait 时 Thread.interrupted()；
+     *       2. command.run() 时异常；
+     *       3. 线程等待中断：trip.awaitNanos(nanos)；trip时Condition类型；
+     *       4. 超时：timed && nanos <= 0L；
+     *       5. reset()
      *
      * Sets current barrier generation as broken and wakes up everyone.
      * // 将"栅栏"设置为"推到"状态、并唤醒每一个等待者。
@@ -446,22 +457,27 @@ public class CyclicBarrier {
             // boolean broken;
             final Generation g = generation;
 
-            // 当线程在处于broken状态的栅栏上调用 dowait
+            /**
+             * fixme step_1：当前循环已经broken时、抛异常；
+             */
             if (g.broken)
                 throw new BrokenBarrierException();
 
             /**
-             * 当前线程处于中断状态，则抛异常
-             *  1. 中断状态会被清除；
-             *  2. 将"栅栏"设置为"推到"状态、并唤醒每一个等待者；
+             * fixme step_2：当前线程处于中断状态
+             *  1. 则清除当前线程中断状态；
+             *  2. 打破当前栅栏；
+             *  3. 抛出中断异常。
              */
             if (Thread.interrupted()) {
-                breakBarrier();
+                breakBarrier();// generation.broken = true; count = parties(初始化后不回改变); trip.signalAll()、唤醒所有等待的线程；
                 throw new InterruptedException();
             }
 
             /**
-             * fixme 如果 栅栏倒下了
+             * fixme step_3： 如果指定的线程到达了栅栏处，执行指定的任务
+             *       1. 异常结束：breakBarrier()、抛出异常；
+             *       2. 正常结束：nextGeneration()、抛出异常；
              */
             int index = --count;
             if (index == 0) {  // tripped
@@ -472,7 +488,7 @@ public class CyclicBarrier {
                     }
                     // fixme 捕获的是Throwable。
                     catch (Throwable ex) {
-                        breakBarrier();
+                        breakBarrier(); // generation.broken = true; count = parties(初始化后不回改变); trip.signalAll()、唤醒所有等待的线程；
                         throw ex;
                     }
                 }
@@ -482,9 +498,8 @@ public class CyclicBarrier {
             }
 
             /**
-             * loop until tripped, broken(??todo ), interrupted, or timed out
-             *
-             * fixme 一直循环，直到栅栏倒下、线程中断或者指定的时间超时。
+             * fixme step_3
+             *       loop until interrupted, tripped, broken or timed out
              */
             for (;;) {
                 try {
@@ -501,35 +516,43 @@ public class CyclicBarrier {
                     }
                 } catch (InterruptedException ie) {
                     /**
-                     * todo 为什么判断 g == generation 呢：会在 nextGeneration 中被改变
-                     *
-                     * 如果不是推倒状态
+                     *  如果还是在当前循环、并且generation.broken没有被调用(即遇到异常情况或者reset)
+                     *  fixme 则breakBroken() 并返回中断异常。
                      */
                     if (g == generation && ! g.broken) {
-                        // 将"栅栏"设置为"推到"状态、并唤醒每一个等待者。
-                        breakBarrier();
+                        breakBarrier(); // generation.broken = true; count = parties(初始化后不回改变); trip.signalAll()、唤醒所有等待的线程；
                         throw ie;
-                    } else {
+                    }
+                    /**
+                     * fixme 如果已经下一个 generation 已经开始了，则给当前线程设置为重置状态。
+                     */
+                    else {
                         // We're about to finish waiting even if we had not // be about to 即将
                         // been interrupted, so this interrupt is deemed to // 被认为
                         // "belong" to subsequent execution.
-                        // fixme 给当前线程设置中断状态
+                        // todo  如果
+                        //          1. 当前generation并且broken：则抛出 broken异常；
+                        //          2. nextGeneration()，则返回递减的count；
+                        //          设置当前线程为中断
                         Thread.currentThread().interrupt();
                     }
                 } // end of try-catch
 
-                // 如果 栅栏倒下了，即调用了 breakBarrier()
+                /**
+                 * 如果异常中断或者reset、则抛异常
+                 **/
                 if (g.broken)
                     throw new BrokenBarrierException();
 
-                // 如果 g 被替换了、则直接返回 递减后的count
+                /**
+                 * 如果进入了下一个generation、返回当前线程等待时的count数量
+                 */
                 if (g != generation)
                     return index;
 
                 // 如果设定了超时、并且超时已经结束，则抛超时异常。
                 if (timed && nanos <= 0L) {
-                    // 将"栅栏"设置为"推到"状态、并唤醒每一个等待者。
-                    breakBarrier();
+                    breakBarrier(); // generation.broken = true; count = parties(初始化后不回改变); trip.signalAll()、唤醒所有等待的线程；
                     throw new TimeoutException();
                 }
             } // end of for_loop
@@ -577,7 +600,7 @@ public class CyclicBarrier {
         try {
             // break the current generation
             // fixme 破坏当前这代循环
-            breakBarrier();
+            breakBarrier(); // generation.broken = true; count = parties(初始化后不回改变); trip.signalAll()、唤醒所有等待的线程；
 
             // start a new generation
             // fixme 重置 count = parties，generation = new Generation(false);
