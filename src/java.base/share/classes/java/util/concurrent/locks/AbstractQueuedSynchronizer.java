@@ -468,7 +468,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     static final int CANCELLED = 0x80000000;
 
     // in a condition wait
-    // 在条件队列中等待
+    // 在条件队列中等待： 2 = 10
     static final int COND = 2;
 
     // Head of the wait queue, lazily initialized.
@@ -579,7 +579,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
         // 父类Node有4个属性：Thread、status、next、prev
         ConditionNode nextWaiter;
 
-        /**如果状态小于等于1或者当前线程中断、则返回ture
+        /**
+         * fixme 如果状态小于等于1或者当前线程中断、则返回ture。
          *
          * 允许ForkJoinPools中使用Conditions，而且不必冒固定线程池耗尽的风险；只有对 非时间Condition 中可用，在时间版本中不可用。
          *
@@ -592,6 +593,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
 
         // 当 status>1 && 当前线程没有中断的时候，挂起当前线程
         public final boolean block() {
+            // 当不可释放的时候，挂起当前线程等待。
             while (!isReleasable()) {
                 LockSupport.park();
             }
@@ -603,7 +605,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     /**
      * Returns the current value of synchronization state.
      * This operation has memory semantics of a {@code volatile} read.
-     * @return current state value
+     *
+     * @return current state value fixme 返回当前状态值。
      */
     protected final int getState() {
         return state;
@@ -612,7 +615,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     /**
      * Sets the value of synchronization state.
      * This operation has memory semantics of a {@code volatile} write.
-     * @param newState the new state value
+     *
+     * @param newState the new state value fixme 设置当前状态值为新值。
      */
     protected final void setState(int newState) {
         state = newState;
@@ -623,6 +627,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
      * value if the current state value equals the expected value.
      * This operation has memory semantics of a {@code volatile} read
      * and write.
+     * fixme 使用cas操作更新state，并返回更新结果。
      *
      * @param expect the expected value
      * @param update the new value
@@ -637,7 +642,6 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     /**
      *  =================== CAS操作工具：Queuing utilities  ===================
      */
-
 
     // CAS操作更新队尾
     private boolean casTail(Node oldTail, Node newTail) {
@@ -1640,10 +1644,10 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
         private void doSignal(ConditionNode first, boolean all) {
             // 当前节点不为null
             while (first != null) {
-                // 获取
                 ConditionNode next = first.nextWaiter;
                 if ((firstWaiter = next) == null)
                     lastWaiter = null;
+                // x & 10 = 只保留状态值的第二位
                 if ((first.getAndUnsetStatus(COND) & COND) != 0) {
                     enqueue(first);
                     if (!all)
