@@ -4115,7 +4115,7 @@ public class Arrays {
      * @return a list view of the specified array
      * @throws NullPointerException if the specified array is {@code null}
      */
-    @SafeVarargs
+    @SafeVarargs // Possible heap pollution from parameterized vararg type
     @SuppressWarnings("varargs")
     public static <T> List<T> asList(T... a) {
         return new ArrayList<>(a);

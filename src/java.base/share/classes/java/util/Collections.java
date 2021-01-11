@@ -675,6 +675,12 @@ public class Collections {
     }
 
     /**
+     * fixme: 说明：T extends Object & Comparable<? super T>>
+     *        https://stackoverflow.com/questions/19488357/why-is-t-bounded-by-object-in-the-collections-max-signature
+     *        https://stackoverflow.com/questions/10339338/t-extends-object-e-vs-t-extends-e
+     *        http://www.angelikalanger.com/GenericsFAQ/FAQSections/ProgrammingIdioms.html#FAQ104
+     *
+     *
      * Returns the maximum element of the given collection, according to the
      * <i>natural ordering</i> of its elements.  All elements in the
      * collection must implement the {@code Comparable} interface.
@@ -696,7 +702,9 @@ public class Collections {
      * @throws NoSuchElementException if the collection is empty.
      * @see Comparable
      */
-    public static <T extends Object & Comparable<? super T>> T max(Collection<? extends T> coll) {
+    public static <T extends Object & Comparable<? super T>> // Comparable 获取元素并进行对比、所以是消费者、因此用super
+    T  // 返回值不实用通配符类型：extends、super
+    max(Collection<? extends T> coll) { // coll 保存着需要对比的元素、因此是生产者、使用extends
         Iterator<? extends T> i = coll.iterator();
         T candidate = i.next();
 

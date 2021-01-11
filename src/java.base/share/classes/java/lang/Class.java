@@ -662,6 +662,7 @@ public final class Class<T> implements java.io.Serializable,
      * reference type represented by this {@code Class} object without
      * raising a {@code ClassCastException.} It returns {@code false}
      * otherwise.
+     * fixme 检查 obj 是否是当前class对象的实例。
      *
      * <p> Specifically, if this {@code Class} object represents a
      * declared class, this method returns {@code true} if the specified
@@ -3805,6 +3806,7 @@ public final class Class<T> implements java.io.Serializable,
     /**
      * Casts an object to the class or interface represented
      * by this {@code Class} object.
+     * fixme 如果当前对象不为null、切是当前class对象的实例，则强转并返回
      *
      * @param obj the object to be cast
      * @return the object after casting, or null if obj is null

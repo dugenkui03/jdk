@@ -35,6 +35,7 @@ import java.lang.annotation.*;
  * <i>non-reifiable</i> variable arity (vararg) type and suppresses
  * unchecked warnings about parameterized array creation at call
  * sites.
+ * fixme 消除可变数组的警告。
  *
  * <p> In addition to the usage restrictions imposed by its {@link
  * Target @Target} meta-annotation, compilers are required to implement
