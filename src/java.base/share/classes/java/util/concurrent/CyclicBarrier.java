@@ -139,53 +139,99 @@ import java.util.concurrent.locks.ReentrantLock;
 public class CyclicBarrier {
     /**
      * Each use of the barrier is represented as a generation instance.
-     * The generation changes whenever the barrier is tripped, or
-     * is reset. There can be many generations associated with threads
+     *
+     * The generation changes whenever the barrier is tripped, or is reset.
+     * There can be many generations associated with threads
      * using the barrier - due to the non-deterministic way the lock
      * may be allocated to waiting threads - but only one of these
      * can be active at a time (the one to which {@code count} applies)
      * and all the rest are either broken or tripped.
      * There need not be an active generation if there has been a break
      * but no subsequent reset.
+     *
+     * fixme 每一个对 barrier 的使用都表示一个generation。
+     *
      */
     private static class Generation {
         Generation() {}                 // prevent access constructor creation
+
+        /**
+         * todo 查看使用的地方，应该不是用来控制 栅栏正常倒下的。
+         */
         boolean broken;                 // initially false
     }
 
-    /** The lock for guarding barrier entry */
+    /**
+     * fixme 入口锁
+     *
+     * The lock for guarding barrier entry
+     */
     private final ReentrantLock lock = new ReentrantLock();
-    /** Condition to wait on until tripped */
+
+    /**
+     * fixme "栅栏倒掉"Condition
+     *
+     * Condition to wait on until tripped
+     */
     private final Condition trip = lock.newCondition();
-    /** The number of parties */
+
+    /**
+     * fixme parties 的数量。
+     *
+     * The number of parties
+     */
     private final int parties;
-    /** The command to run when tripped */
+
+    /**
+     * fixme "栅栏倒掉"后执行的任务
+     *
+     * The command to run when tripped
+     */
     private final Runnable barrierCommand;
-    /** The current generation */
+
+    /**
+     * fixme 当前的generation。
+     *
+     * The current generation
+     */
     private Generation generation = new Generation();
 
     /**
-     * Number of parties still waiting. Counts down from parties to 0
-     * on each generation.  It is reset to parties on each new
-     * generation or when broken.
+     * fixme 仍然在等待的 parties。
+     * Number of parties still waiting.
+     *
+     * todo
+     * Counts down from parties to 0 on each generation.
+     * It is reset to parties on each new generation or when broken.
      */
     private int count;
 
     /**
+     * fixme 更新状态、唤醒所有等待者？
      * Updates state on barrier trip and wakes up everyone.
      * Called only while holding lock.
      */
     private void nextGeneration() {
         // signal completion of last generation
         trip.signalAll();
+
+        /**
+         * fixme 重置数据
+         *       1. 重置 count = parties；
+         *       2. 重新设定 generation对象（加锁操作、所以可以保证可见性）。
+         */
         // set up next generation
         count = parties;
         generation = new Generation();
     }
 
     /**
+     * fixme 直接将等待状态设置为饱和状态。
+     *
      * Sets current barrier generation as broken and wakes up everyone.
-     * Called only while holding lock.
+     * // 将"栅栏"设置为"推到"状态、并唤醒每一个等待者。
+     *
+     * Called only while holding lock. // 仅在持锁状态下调用。
      */
     private void breakBarrier() {
         generation.broken = true;
@@ -193,8 +239,13 @@ public class CyclicBarrier {
         trip.signalAll();
     }
 
+
     /**
+     * fixme 主要实现代码、包括各种策略的实现。
+     *
      * Main barrier code, covering the various policies.
+     * @param timed 是否设定了超时时间。
+     * @param nanos 设定的超时时间，单位 纳秒
      */
     private int dowait(boolean timed, long nanos)
         throws InterruptedException, BrokenBarrierException,
@@ -202,16 +253,26 @@ public class CyclicBarrier {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
+            // boolean broken;
             final Generation g = generation;
 
+            // 当线程在处于broken状态的栅栏上调用 dowait
             if (g.broken)
                 throw new BrokenBarrierException();
 
+            /**
+             * 当前线程处于中断状态，则抛异常
+             *  1. 中断状态会被清除；
+             *  2. 将"栅栏"设置为"推到"状态、并唤醒每一个等待者；
+             */
             if (Thread.interrupted()) {
                 breakBarrier();
                 throw new InterruptedException();
             }
 
+            /**
+             * fixme 如果 栅栏倒下了
+             */
             int index = --count;
             if (index == 0) {  // tripped
                 Runnable command = barrierCommand;
@@ -223,41 +284,65 @@ public class CyclicBarrier {
                         throw ex;
                     }
                 }
+                // 重置 count = parties，generation = new Generation(false);
                 nextGeneration();
                 return 0;
             }
 
-            // loop until tripped, broken, interrupted, or timed out
+            /**
+             * loop until tripped, broken(??todo ), interrupted, or timed out
+             *
+             * fixme 一直循环，直到栅栏倒下、线程中断或者指定的时间超时。
+             */
             for (;;) {
                 try {
-                    if (!timed)
+                    // 如果没有设定
+                    if (!timed){
                         trip.await();
-                    else if (nanos > 0L)
+                    }
+                    /**
+                     * 如果设定了超时时间、或者剩余的超时时间大于0，则等待指定的超时时间
+                     */
+                    else if (nanos > 0L){
+                        // 获取剩余等待时间
                         nanos = trip.awaitNanos(nanos);
+                    }
                 } catch (InterruptedException ie) {
+                    /**
+                     * todo 为什么判断 g == generation 呢
+                     *
+                     * 如果不是推倒状态
+                     */
                     if (g == generation && ! g.broken) {
+                        // 将"栅栏"设置为"推到"状态、并唤醒每一个等待者。
                         breakBarrier();
                         throw ie;
                     } else {
-                        // We're about to finish waiting even if we had not
-                        // been interrupted, so this interrupt is deemed to
+                        // We're about to finish waiting even if we had not // be about to 即将
+                        // been interrupted, so this interrupt is deemed to // 被认为
                         // "belong" to subsequent execution.
+                        // 我们将要结束等待、即使线程没有被终止。 todo
                         Thread.currentThread().interrupt();
                     }
-                }
+                } // end of try-catch
 
+                // 如果 栅栏倒下了
                 if (g.broken)
                     throw new BrokenBarrierException();
 
+                // 如果 g 被替换了、则直接返回 递减后的count
                 if (g != generation)
                     return index;
 
+                // 如果设定了超时、并且超时已经结束，则抛超时异常。
                 if (timed && nanos <= 0L) {
+                    // 将"栅栏"设置为"推到"状态、并唤醒每一个等待者。
                     breakBarrier();
                     throw new TimeoutException();
                 }
-            }
+            } // end of for_loop
         } finally {
+            // fixme 在finally中释放锁。
             lock.unlock();
         }
     }
@@ -285,9 +370,12 @@ public class CyclicBarrier {
      * Creates a new {@code CyclicBarrier} that will trip when the
      * given number of parties (threads) are waiting upon it, and
      * does not perform a predefined action when the barrier is tripped.
+     * fixme 创建一个指定 parties/线程 数量的栅栏，并且当"栅栏倒下"的时候不触发任何动作。
      *
      * @param parties the number of threads that must invoke {@link #await}
-     *        before the barrier is tripped
+     *                before the barrier is tripped
+     *                fixme 栅栏倒下的时候，必须有 parties 个线程调用 {@link #await}
+     *
      * @throws IllegalArgumentException if {@code parties} is less than 1
      */
     public CyclicBarrier(int parties) {
@@ -296,6 +384,7 @@ public class CyclicBarrier {
 
     /**
      * Returns the number of parties required to trip this barrier.
+     * fixme 推到 栅栏 所需要的parties数量。
      *
      * @return the number of parties required to trip this barrier
      */
@@ -366,6 +455,8 @@ public class CyclicBarrier {
     }
 
     /**
+     * fixme 等待指定的时间。
+     *
      * Waits until all {@linkplain #getParties parties} have invoked
      * {@code await} on this barrier, or the specified waiting time elapses.
      *
@@ -437,6 +528,7 @@ public class CyclicBarrier {
 
     /**
      * Queries if this barrier is in a broken state.
+     * fixme 检测 栅栏是否是 broken 状态。
      *
      * @return {@code true} if one or more parties broke out of this
      *         barrier due to interruption or timeout since
@@ -459,15 +551,24 @@ public class CyclicBarrier {
      * {@link BrokenBarrierException}. Note that resets <em>after</em>
      * a breakage has occurred for other reasons can be complicated to
      * carry out; threads need to re-synchronize in some other way,
-     * and choose one to perform the reset.  It may be preferable to
+     * and choose one to perform the reset. It may be preferable to
      * instead create a new barrier for subsequent use.
+     *
+     * fixme
+     *      将栅栏重置为初始的状态。如果有任何等待的线程、他们将会返回一个 Broken 异常——————————不会吧？
+     *
      */
     public void reset() {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
-            breakBarrier();   // break the current generation
-            nextGeneration(); // start a new generation
+            // break the current generation
+            // fixme 破坏当前这代循环
+            breakBarrier();
+
+            // start a new generation
+            // fixme 重置 count = parties，generation = new Generation(false);
+            nextGeneration();
         } finally {
             lock.unlock();
         }
@@ -476,6 +577,7 @@ public class CyclicBarrier {
     /**
      * Returns the number of parties currently waiting at the barrier.
      * This method is primarily useful for debugging and assertions.
+     * fixme 获取当前等待的线程数量。
      *
      * @return the number of parties currently blocked in {@link #await}
      */

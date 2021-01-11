@@ -40,6 +40,9 @@ package java.util.concurrent;
  * in a broken state, or which enters the broken state while the thread
  * is waiting.
  *
+ * fixme 当线程在处于broken状态的栅栏上调用 dowait；
+ *       或者当线程处于等待状态的时候进入"被推倒"状态。
+ *
  * @see CyclicBarrier
  *
  * @since 1.5

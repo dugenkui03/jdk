@@ -1023,6 +1023,7 @@ public class Thread implements Runnable {
         // We may have been interrupted the moment after we read the field,
         // so only clear the field if we saw that it was set and will return
         // true; otherwise we could lose an interrupt.
+        // fixme 会清除中断状态
         if (interrupted) {
             t.interrupted = false;
             clearInterruptEvent();

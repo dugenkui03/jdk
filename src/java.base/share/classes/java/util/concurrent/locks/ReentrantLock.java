@@ -321,6 +321,8 @@ public class ReentrantLock implements Lock, java.io.Serializable {
 
     /**
      * Acquires the lock.
+     * fixme 1. 阻塞获取锁：1，i++；
+     *       2. 可重入；
      *
      * <p>Acquires the lock if it is not held by another thread and returns
      * immediately, setting the lock hold count to one.
@@ -330,7 +332,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
      *
      * <p>If the lock is held by another thread then the
      * current thread becomes disabled for thread scheduling
-     * purposes and lies dormant until the lock has been acquired,
+     * purposes and lies dormant(adj. 休眠的) until the lock has been acquired,
      * at which time the lock hold count is set to one.
      */
     public void lock() {

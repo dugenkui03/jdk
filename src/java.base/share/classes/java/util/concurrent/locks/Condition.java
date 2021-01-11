@@ -363,7 +363,7 @@ public interface Condition {
      *         subsequent call to this method to finish waiting out
      *         the desired time.  A value less than or equal to zero
      *         indicates that no time remains.
-     *         fixme 剩余的等待时间，小于或者等于0表示超时了。
+     *         fixme nanosTimeout-在当前方法消耗的时间：剩余的等待时间，小于或者等于0表示超时了。
      *
      * @throws InterruptedException if the current thread is interrupted (and interruption of thread suspension is supported)
      */
