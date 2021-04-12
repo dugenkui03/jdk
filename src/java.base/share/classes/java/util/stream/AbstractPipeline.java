@@ -131,6 +131,8 @@ abstract class AbstractPipeline<E_IN, E_OUT, S extends BaseStream<E_OUT, S>>
 
     /**
      * True if this pipeline has been linked or consumed
+     *
+     * 如果流已经被链接或者消费、则设置为true。
      */
     private boolean linkedOrConsumed;
 

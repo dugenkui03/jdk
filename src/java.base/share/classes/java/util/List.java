@@ -576,6 +576,7 @@ public interface List<E> extends Collection<E> {
     /**
      * Replaces the element at the specified position in this list with the
      * specified element (optional operation).
+     * fixme 使用指定元素替换指定位置、并返回之前的元素。
      *
      * @param index index of the element to replace
      * @param element element to be stored at the specified position
@@ -586,6 +587,8 @@ public interface List<E> extends Collection<E> {
      *         prevents it from being added to this list
      * @throws NullPointerException if the specified element is null and
      *         this list does not permit null elements
+     *         fixme 如果指定的元素是null、并且list不允许出现null元素。
+     *
      * @throws IllegalArgumentException if some property of the specified
      *         element prevents it from being added to this list
      * @throws IndexOutOfBoundsException if the index is out of range

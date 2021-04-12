@@ -41,28 +41,40 @@ import java.util.function.IntUnaryOperator;
 import jdk.internal.misc.Unsafe;
 
 /**
- * An {@code int} value that may be updated atomically.  See the
- * {@link VarHandle} specification for descriptions of the properties
- * of atomic accesses. An {@code AtomicInteger} is used in
- * applications such as atomically incremented counters, and cannot be
- * used as a replacement for an {@link java.lang.Integer}. However,
- * this class does extend {@code Number} to allow uniform access by
- * tools and utilities that deal with numerically-based classes.
+ * An {@code int} value that may be updated atomically.
+ * See the {@link VarHandle} specification for descriptions
+ * of the properties of atomic accesses.
+ * fixme
+ *      可以原子的更新值的 int值，查看VarHandle规范中、对于 原子获取 的属性描述。
+ *      原子类可以用来作为并发计数器，但是并不能用来替代Integer。
+ *      但是该类继承 Number，因此一些 xxNumberUtil 可以对其进行数值操作。
+ *
+ * An {@code AtomicInteger}
+ * is used in applications such as atomically incremented counters,
+ * and cannot be used as a replacement for an {@link java.lang.Integer}.
+ * However, this class does extend {@code Number} to allow uniform access
+ * by tools and utilities that deal with numerically-based classes.
  *
  * @since 1.5
  * @author Doug Lea
  */
-public class AtomicInteger extends Number implements java.io.Serializable {
+public class AtomicInteger
+        // byte short int long float double
+        extends Number
+        // 可序列化
+        implements java.io.Serializable {
     private static final long serialVersionUID = 6214790243416807050L;
 
     /*
-     * This class intended to be implemented using VarHandles, but there
-     * are unresolved cyclic startup dependencies.
+     * This class intended to be implemented using VarHandles,
+     * but there are unresolved cyclic startup dependencies.
      */
-    private static final Unsafe U = Unsafe.getUnsafe();
-    private static final long VALUE
-        = U.objectFieldOffset(AtomicInteger.class, "value");
 
+    // 获取 AtomicInteger.class 中，value 属性的偏移量
+    private static final Unsafe U = Unsafe.getUnsafe();
+    private static final long VALUE_OFFSET = U.objectFieldOffset(AtomicInteger.class, "value");
+
+    // volatile 保证可见性
     private volatile int value;
 
     /**
@@ -91,6 +103,8 @@ public class AtomicInteger extends Number implements java.io.Serializable {
     }
 
     /**
+     * 为Integer对象指定新的值。
+     *
      * Sets the value to {@code newValue},
      * with memory effects as specified by {@link VarHandle#setVolatile}.
      *
@@ -101,28 +115,35 @@ public class AtomicInteger extends Number implements java.io.Serializable {
     }
 
     /**
-     * Sets the value to {@code newValue},
-     * with memory effects as specified by {@link VarHandle#setRelease}.
+     * Sets the value to {@code newValue}, with memory effects
+     * as specified by {@link VarHandle#setRelease}.
      *
      * @param newValue the new value
      * @since 1.6
      */
     public final void lazySet(int newValue) {
-        U.putIntRelease(this, VALUE, newValue);
+        // 具有 volatile 语义的 putInt(object,offSet,newValue)
+        U.putIntRelease(this, VALUE_OFFSET, newValue);
     }
 
     /**
+     * 更新指定值、并返回旧值。
+     *
      * Atomically sets the value to {@code newValue} and returns the old value,
      * with memory effects as specified by {@link VarHandle#getAndSet}.
      *
      * @param newValue the new value
+     *        新的值。
      * @return the previous value
+     *         获取之前的值。
      */
     public final int getAndSet(int newValue) {
-        return U.getAndSetInt(this, VALUE, newValue);
+        return U.getAndSetInt(this, VALUE_OFFSET, newValue);
     }
 
     /**
+     * cas操作。
+     *
      * Atomically sets the value to {@code newValue}
      * if the current value {@code == expectedValue},
      * with memory effects as specified by {@link VarHandle#compareAndSet}.
@@ -133,10 +154,12 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * the actual value was not equal to the expected value.
      */
     public final boolean compareAndSet(int expectedValue, int newValue) {
-        return U.compareAndSetInt(this, VALUE, expectedValue, newValue);
+        return U.compareAndSetInt(this, VALUE_OFFSET, expectedValue, newValue);
     }
 
     /**
+     * todo
+     *
      * Possibly atomically sets the value to {@code newValue}
      * if the current value {@code == expectedValue},
      * with memory effects as specified by {@link VarHandle#weakCompareAndSetPlain}.
@@ -154,7 +177,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      */
     @Deprecated(since="9")
     public final boolean weakCompareAndSet(int expectedValue, int newValue) {
-        return U.weakCompareAndSetIntPlain(this, VALUE, expectedValue, newValue);
+        return U.weakCompareAndSetIntPlain(this, VALUE_OFFSET, expectedValue, newValue);
     }
 
     /**
@@ -168,22 +191,27 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 9
      */
     public final boolean weakCompareAndSetPlain(int expectedValue, int newValue) {
-        return U.weakCompareAndSetIntPlain(this, VALUE, expectedValue, newValue);
+        return U.weakCompareAndSetIntPlain(this, VALUE_OFFSET, expectedValue, newValue);
     }
 
     /**
+     * 原子的递增，并返回旧值。
+     *
      * Atomically increments the current value,
      * with memory effects as specified by {@link VarHandle#getAndAdd}.
      *
      * <p>Equivalent to {@code getAndAdd(1)}.
      *
      * @return the previous value
+     *         旧值。
      */
     public final int getAndIncrement() {
-        return U.getAndAddInt(this, VALUE, 1);
+        return U.getAndAddInt(this, VALUE_OFFSET, 1);
     }
 
     /**
+     * 原子的递减，并返回旧值。
+     *
      * Atomically decrements the current value,
      * with memory effects as specified by {@link VarHandle#getAndAdd}.
      *
@@ -192,7 +220,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @return the previous value
      */
     public final int getAndDecrement() {
-        return U.getAndAddInt(this, VALUE, -1);
+        return U.getAndAddInt(this, VALUE_OFFSET, -1);
     }
 
     /**
@@ -203,7 +231,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @return the previous value
      */
     public final int getAndAdd(int delta) {
-        return U.getAndAddInt(this, VALUE, delta);
+        return U.getAndAddInt(this, VALUE_OFFSET, delta);
     }
 
     /**
@@ -215,7 +243,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @return the updated value
      */
     public final int incrementAndGet() {
-        return U.getAndAddInt(this, VALUE, 1) + 1;
+        return U.getAndAddInt(this, VALUE_OFFSET, 1) + 1;
     }
 
     /**
@@ -227,7 +255,8 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @return the updated value
      */
     public final int decrementAndGet() {
-        return U.getAndAddInt(this, VALUE, -1) - 1;
+        // getAndAddInt返回的是原始值，所以要-1；
+        return U.getAndAddInt(this, VALUE_OFFSET, -1) - 1;
     }
 
     /**
@@ -238,27 +267,40 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @return the updated value
      */
     public final int addAndGet(int delta) {
-        return U.getAndAddInt(this, VALUE, delta) + delta;
+        return U.getAndAddInt(this, VALUE_OFFSET, delta) + delta;
     }
 
     /**
+     * todo：挺高级的一个函数。
+     *
      * Atomically updates (with memory effects as specified by {@link
      * VarHandle#compareAndSet}) the current value with the results of
-     * applying the given function, returning the previous value. The
-     * function should be side-effect-free, since it may be re-applied
-     * when attempted updates fail due to contention among threads.
+     * applying the given function, returning the previous value.
+     *
+     * The function should be side-effect-free, since it may be re-applied
+     * when attempted updates fail due to contention(争用) among threads.
+     * 该函数应该是"没有副作用"的，因为可能因为线程间的cas争用、导致函数执行多次。
      *
      * @param updateFunction a side-effect-free function
+     *                       无副作用的函数；
+     *                       int applyAsInt(int operand);
+     *
      * @return the previous value
      * @since 1.8
      */
     public final int getAndUpdate(IntUnaryOperator updateFunction) {
         int prev = get(), next = 0;
         for (boolean haveNext = false;;) {
-            if (!haveNext)
+            // 如果下一个可用值没获取到，则使用函数进行计算。
+            if (!haveNext){
                 next = updateFunction.applyAsInt(prev);
+            }
+            // 此时的next永远是个可用值
+            // 如果使用 cas 操作成功更新指定值、则返回旧值
             if (weakCompareAndSetVolatile(prev, next))
                 return prev;
+            // 如果 值没边(a ->b -> a)，
+            // 则将haveNext标记为true、不会再执行updateFunction函数
             haveNext = (prev == (prev = get()));
         }
     }
@@ -280,12 +322,15 @@ public class AtomicInteger extends Number implements java.io.Serializable {
             if (!haveNext)
                 next = updateFunction.applyAsInt(prev);
             if (weakCompareAndSetVolatile(prev, next))
+                // 和 getAndUpdate 的唯一区别
                 return next;
             haveNext = (prev == (prev = get()));
         }
     }
 
     /**
+     * todo 非常有用。
+     *
      * Atomically updates (with memory effects as specified by {@link
      * VarHandle#compareAndSet}) the current value with the results of
      * applying the given function to the current and given values,
@@ -296,16 +341,21 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * given update as the second argument.
      *
      * @param x the update value
+     *          使用当前值和x、计算出下一个值。
+     *
      * @param accumulatorFunction a side-effect-free function of two arguments
+     *                            int applyAsInt(int left, int right)
+     *
      * @return the previous value
-     * @since 1.8
+     *         返回之前的值。
      */
-    public final int getAndAccumulate(int x,
-                                      IntBinaryOperator accumulatorFunction) {
+    public final int getAndAccumulate(int x, IntBinaryOperator accumulatorFunction) {
         int prev = get(), next = 0;
         for (boolean haveNext = false;;) {
-            if (!haveNext)
+            // 是否计算出类下一个有效值。
+            if (!haveNext){
                 next = accumulatorFunction.applyAsInt(prev, x);
+            }
             if (weakCompareAndSetVolatile(prev, next))
                 return prev;
             haveNext = (prev == (prev = get()));
@@ -327,14 +377,16 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @return the updated value
      * @since 1.8
      */
-    public final int accumulateAndGet(int x,
-                                      IntBinaryOperator accumulatorFunction) {
+    public final int accumulateAndGet(int x, IntBinaryOperator accumulatorFunction) {
         int prev = get(), next = 0;
         for (boolean haveNext = false;;) {
-            if (!haveNext)
+            if (!haveNext){
                 next = accumulatorFunction.applyAsInt(prev, x);
-            if (weakCompareAndSetVolatile(prev, next))
+            }
+            // 返回新值
+            if (weakCompareAndSetVolatile(prev, next)){
                 return next;
+            }
             haveNext = (prev == (prev = get()));
         }
     }
@@ -391,14 +443,14 @@ public class AtomicInteger extends Number implements java.io.Serializable {
     // jdk9
 
     /**
-     * Returns the current value, with memory semantics of reading as
-     * if the variable was declared non-{@code volatile}.
+     * Returns the current value, with memory semantics
+     * of reading as if the variable was declared non-{@code volatile}.
      *
      * @return the value
      * @since 9
      */
     public final int getPlain() {
-        return U.getInt(this, VALUE);
+        return U.getInt(this, VALUE_OFFSET);
     }
 
     /**
@@ -410,7 +462,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 9
      */
     public final void setPlain(int newValue) {
-        U.putInt(this, VALUE, newValue);
+        U.putInt(this, VALUE_OFFSET, newValue);
     }
 
     /**
@@ -421,7 +473,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 9
      */
     public final int getOpaque() {
-        return U.getIntOpaque(this, VALUE);
+        return U.getIntOpaque(this, VALUE_OFFSET);
     }
 
     /**
@@ -432,7 +484,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 9
      */
     public final void setOpaque(int newValue) {
-        U.putIntOpaque(this, VALUE, newValue);
+        U.putIntOpaque(this, VALUE_OFFSET, newValue);
     }
 
     /**
@@ -443,7 +495,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 9
      */
     public final int getAcquire() {
-        return U.getIntAcquire(this, VALUE);
+        return U.getIntAcquire(this, VALUE_OFFSET);
     }
 
     /**
@@ -454,7 +506,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 9
      */
     public final void setRelease(int newValue) {
-        U.putIntRelease(this, VALUE, newValue);
+        U.putIntRelease(this, VALUE_OFFSET, newValue);
     }
 
     /**
@@ -470,7 +522,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 9
      */
     public final int compareAndExchange(int expectedValue, int newValue) {
-        return U.compareAndExchangeInt(this, VALUE, expectedValue, newValue);
+        return U.compareAndExchangeInt(this, VALUE_OFFSET, expectedValue, newValue);
     }
 
     /**
@@ -486,7 +538,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 9
      */
     public final int compareAndExchangeAcquire(int expectedValue, int newValue) {
-        return U.compareAndExchangeIntAcquire(this, VALUE, expectedValue, newValue);
+        return U.compareAndExchangeIntAcquire(this, VALUE_OFFSET, expectedValue, newValue);
     }
 
     /**
@@ -502,7 +554,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 9
      */
     public final int compareAndExchangeRelease(int expectedValue, int newValue) {
-        return U.compareAndExchangeIntRelease(this, VALUE, expectedValue, newValue);
+        return U.compareAndExchangeIntRelease(this, VALUE_OFFSET, expectedValue, newValue);
     }
 
     /**
@@ -517,7 +569,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 9
      */
     public final boolean weakCompareAndSetVolatile(int expectedValue, int newValue) {
-        return U.weakCompareAndSetInt(this, VALUE, expectedValue, newValue);
+        return U.weakCompareAndSetInt(this, VALUE_OFFSET, expectedValue, newValue);
     }
 
     /**
@@ -532,7 +584,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 9
      */
     public final boolean weakCompareAndSetAcquire(int expectedValue, int newValue) {
-        return U.weakCompareAndSetIntAcquire(this, VALUE, expectedValue, newValue);
+        return U.weakCompareAndSetIntAcquire(this, VALUE_OFFSET, expectedValue, newValue);
     }
 
     /**
@@ -547,7 +599,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 9
      */
     public final boolean weakCompareAndSetRelease(int expectedValue, int newValue) {
-        return U.weakCompareAndSetIntRelease(this, VALUE, expectedValue, newValue);
+        return U.weakCompareAndSetIntRelease(this, VALUE_OFFSET, expectedValue, newValue);
     }
 
 }

@@ -75,37 +75,54 @@ import java.util.Objects;
 public enum TimeUnit {
     /**
      * Time unit representing one thousandth of a microsecond.
+     *
+     * kp 之前枚举的内容是各种换算的计算方法，现在是通过进率计算出的各种缓存。
      */
     NANOSECONDS(TimeUnit.NANO_SCALE),
+
     /**
      * Time unit representing one thousandth of a millisecond.
+     *
+     * fixme 微秒，千分之一毫秒。
      */
     MICROSECONDS(TimeUnit.MICRO_SCALE),
+
     /**
      * Time unit representing one thousandth of a second.
+     *
+     * fixme 毫秒，千分之一秒
      */
     MILLISECONDS(TimeUnit.MILLI_SCALE),
+
     /**
      * Time unit representing one second.
+     *  fixme 1秒；
      */
     SECONDS(TimeUnit.SECOND_SCALE),
+
     /**
      * Time unit representing sixty seconds.
-     * @since 1.6
+     *
+     * fixme：一分钟，60秒
      */
     MINUTES(TimeUnit.MINUTE_SCALE),
+
     /**
      * Time unit representing sixty minutes.
-     * @since 1.6
+     *
+     * fixme 小时：60分钟
      */
     HOURS(TimeUnit.HOUR_SCALE),
+
     /**
      * Time unit representing twenty four hours.
-     * @since 1.6
+     *
+     * fixme 天：24小时
      */
     DAYS(TimeUnit.DAY_SCALE);
 
     // Scales as constants
+    // fixme 每一个时间单位与最小的纳秒关系
     private static final long NANO_SCALE   = 1L;
     private static final long MICRO_SCALE  = 1000L * NANO_SCALE;
     private static final long MILLI_SCALE  = 1000L * MICRO_SCALE;
@@ -119,8 +136,12 @@ public enum TimeUnit {
      * the units up through SECONDS. Other cases compute them, in
      * method cvt.
      */
-
+    // 和纳秒的换算关系
     private final long scale;
+    /**
+     * 时间的最大值是 (Long.MAX_VALUE 纳秒)
+     * 对应每种时间单位可表示的(Long.MAX_VALUE 纳秒)的数值是 maxNanos
+     */
     private final long maxNanos;
     private final long maxMicros;
     private final long maxMillis;
@@ -129,17 +150,33 @@ public enum TimeUnit {
     private final int milliRatio;   // fits in 32 bits
     private final int secRatio;     // fits in 32 bits
 
+    /**
+     * kp 对于一些固定的计算，提前在构造参数计算好
+     *
+     * @param s 和纳秒的进率关系，即 是纳秒的多少倍
+     */
     private TimeUnit(long s) {
         this.scale = s;
         this.maxNanos = Long.MAX_VALUE / s;
+
+        // 如果时间单位比微秒大：s/1000(微秒换算单位)，表示 "1该时间单位为多少微秒"
+        // 否则： 1000/s 表示"1微妙为多少该时间单位"
         long ur = (s >= MICRO_SCALE) ? (s / MICRO_SCALE) : (MICRO_SCALE / s);
+        // 和微妙的进率关系
         this.microRatio = ur;
+        // 该时间单位最多有多少个微妙
         this.maxMicros = Long.MAX_VALUE / ur;
+
+        // 和毫秒的进率关系
         long mr = (s >= MILLI_SCALE) ? (s / MILLI_SCALE) : (MILLI_SCALE / s);
         this.milliRatio = (int)mr;
+        // 该时间单位最多有多少个毫秒
         this.maxMillis = Long.MAX_VALUE / mr;
+
+        // 和秒的进率关系
         long sr = (s >= SECOND_SCALE) ? (s / SECOND_SCALE) : (SECOND_SCALE / s);
         this.secRatio = (int)sr;
+        // 该时间单位最多有多少秒
         this.maxSecs = Long.MAX_VALUE / sr;
     }
 
@@ -172,6 +209,7 @@ public enum TimeUnit {
      * finer granularities with arguments that would numerically
      * overflow saturate to {@code Long.MIN_VALUE} if negative or
      * {@code Long.MAX_VALUE} if positive.
+     * fixme 转换到指定单位的时间。
      *
      * <p>For example, to convert 10 minutes to milliseconds, use:
      * {@code TimeUnit.MILLISECONDS.convert(10L, TimeUnit.MINUTES)}
@@ -358,8 +396,9 @@ public enum TimeUnit {
     }
 
     /**
-     * Utility to compute the excess-nanosecond argument to wait,
-     * sleep, join.
+     * kp 这里之前是个抽象方法
+     *
+     * Utility to compute the excess-nanosecond argument to wait, sleep, join.
      * @param d the duration
      * @param m the number of milliseconds
      * @return the number of nanoseconds

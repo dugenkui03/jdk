@@ -176,12 +176,16 @@ import java.util.concurrent.TimeUnit;
  *
  * @since 1.5
  * @author Doug Lea
+ *
+ * fixme
+ *      1. 调用这些方法的时候、必须获取了响应的锁；
+ *      2. 但是唤醒的粒度更细了；
  */
 public interface Condition {
 
     /**
-     * Causes the current thread to wait until it is signalled or
-     * {@linkplain Thread#interrupt interrupted}.
+     * Causes the current thread to wait until it is signalled or {@linkplain Thread#interrupt interrupted}.
+     * fixme 阻塞的等待、直到其他线程唤醒、或者当前线程被中断。
      *
      * <p>The lock associated with this {@code Condition} is atomically
      * released and the current thread becomes disabled for thread scheduling
@@ -233,6 +237,7 @@ public interface Condition {
 
     /**
      * Causes the current thread to wait until it is signalled.
+     * fixme 阻塞的等待、直到被其他线程唤醒，不可中断、即不感知中断状态。
      *
      * <p>The lock associated with this condition is atomically
      * released and the current thread becomes disabled for thread scheduling
@@ -268,8 +273,11 @@ public interface Condition {
     void awaitUninterruptibly();
 
     /**
-     * Causes the current thread to wait until it is signalled or interrupted,
+     * Causes the current thread to wait
+     * until it is signalled or interrupted,
      * or the specified waiting time elapses.
+     *
+     * fixme 阻塞的等待、直到被唤醒、中断、或者过了指定时间。
      *
      * <p>The lock associated with this condition is atomically
      * released and the current thread becomes disabled for thread scheduling
@@ -349,22 +357,26 @@ public interface Condition {
      * there is one.
      *
      * @param nanosTimeout the maximum time to wait, in nanoseconds
-     * @return an estimate of the {@code nanosTimeout} value minus
+     * @return an estimate of(一个预估的) the {@code nanosTimeout} value minus(减去)
      *         the time spent waiting upon return from this method.
      *         A positive value may be used as the argument to a
      *         subsequent call to this method to finish waiting out
      *         the desired time.  A value less than or equal to zero
      *         indicates that no time remains.
-     * @throws InterruptedException if the current thread is interrupted
-     *         (and interruption of thread suspension is supported)
+     *         fixme nanosTimeout-在当前方法消耗的时间：剩余的等待时间，小于或者等于0表示超时了。
+     *
+     * @throws InterruptedException if the current thread is interrupted (and interruption of thread suspension is supported)
      */
     long awaitNanos(long nanosTimeout) throws InterruptedException;
 
     /**
      * Causes the current thread to wait until it is signalled or interrupted,
-     * or the specified waiting time elapses. This method is behaviorally
-     * equivalent to:
+     * or the specified waiting time elapses.
+     *
+     * This method is behaviorally equivalent to:
      * <pre> {@code awaitNanos(unit.toNanos(time)) > 0}</pre>
+     *
+     * 阻塞的等待、直到被唤醒、中断、或者过了指定时间。方法同awaitNanos一样的
      *
      * @param time the maximum time to wait
      * @param unit the time unit of the {@code time} argument
@@ -378,6 +390,8 @@ public interface Condition {
     /**
      * Causes the current thread to wait until it is signalled or interrupted,
      * or the specified deadline elapses.
+     *
+     * fixme 阻塞、直到被唤醒、中断和到达指定时间。
      *
      * <p>The lock associated with this condition is atomically
      * released and the current thread becomes disabled for thread scheduling
@@ -454,37 +468,50 @@ public interface Condition {
 
     /**
      * Wakes up one waiting thread.
+     * fixme 唤醒一个等待线程。
      *
-     * <p>If any threads are waiting on this condition then one
-     * is selected for waking up. That thread must then re-acquire the
-     * lock before returning from {@code await}.
+     * <p>If any threads are waiting on this condition then one is selected for waking up.
+     * That thread must then re-acquire the lock before returning from {@code await}.
+     *
+     * fixme 选择任一等待在条件队列的线程唤醒、 该线程在从 await() 状态苏醒前必须重新获取锁——保证原子性。
      *
      * <p><b>Implementation Considerations</b>
      *
-     * <p>An implementation may (and typically does) require that the
-     * current thread hold the lock associated with this {@code
-     * Condition} when this method is called. Implementations must
-     * document this precondition and any actions taken if the lock is
-     * not held. Typically, an exception such as {@link
-     * IllegalMonitorStateException} will be thrown.
+     * <p>An implementation may (and typically does) require that the current thread hold the lock
+     * associated with this {@code Condition} when this method is called.
+     * Implementations must document this precondition(前提条件) and any actions taken if the lock is not held.
+     * Typically, an exception such as {@link IllegalMonitorStateException} will be thrown.
+     *
+     * <p><b>注意事项</b>
+     * 在调用该方法时、需要获取该Condition关联的锁。
+     *
      */
     void signal();
 
     /**
      * Wakes up all waiting threads.
+     * fixme 唤醒所有等待的线程。
      *
-     * <p>If any threads are waiting on this condition then they are
-     * all woken up. Each thread must re-acquire the lock before it can
-     * return from {@code await}.
+     * <p>If any threads are waiting on this condition then they are all woken up.
+     * Each thread must re-acquire the lock before it can return from {@code await}.
+     *
+     * fixme: 唤醒所有在该condition上等待的线程。重要：要真正的从结束await()从中醒来、需要重新获取锁。
      *
      * <p><b>Implementation Considerations</b>
      *
-     * <p>An implementation may (and typically does) require that the
-     * current thread hold the lock associated with this {@code
-     * Condition} when this method is called. Implementations must
+     * <p>An implementation may (and typically does) require
+     * // 从句
+     * that the current thread hold the lock associated with this {@code Condition}
+     * // 状语从句
+     * when this method is called. Implementations must
      * document this precondition and any actions taken if the lock is
      * not held. Typically, an exception such as {@link
      * IllegalMonitorStateException} will be thrown.
+     *
+     * fixme 实现注意事项
+     * 该方法实现会要求当前线程只有此Condition相关的锁
+     *
+     *
      */
     void signalAll();
 }

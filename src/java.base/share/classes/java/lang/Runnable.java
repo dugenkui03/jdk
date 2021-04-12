@@ -27,8 +27,11 @@ package java.lang;
 
 /**
  * The {@code Runnable} interface should be implemented by any
- * class whose instances are intended to be executed by a thread. The
- * class must define a method of no arguments called {@code run}.
+ * class whose instances(实例) are intended to be executed by a thread.
+ * The class must define a method of no arguments called {@code run}.
+ * fixme
+ *      实现该接口的类重写 run 方法，里边有可以被某个线程执行的逻辑。
+ *
  * <p>
  * This interface is designed to provide a common protocol for objects that
  * wish to execute code while they are active. For example,

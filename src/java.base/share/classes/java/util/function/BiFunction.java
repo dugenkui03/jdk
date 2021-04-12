@@ -46,6 +46,8 @@ public interface BiFunction<T, U, R> {
     /**
      * Applies this function to the given arguments.
      *
+     * xxFunction() 都有返回值
+     *
      * @param t the first function argument
      * @param u the second function argument
      * @return the function result

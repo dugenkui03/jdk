@@ -41,30 +41,37 @@ import java.util.function.BinaryOperator;
 import java.util.function.UnaryOperator;
 
 /**
- * An object reference that may be updated atomically.  See the {@link
- * VarHandle} specification for descriptions of the properties of
- * atomic accesses.
+ * An object reference that may be updated atomically.
+ * See the {@link VarHandle} specification for descriptions
+ * of the properties of atomic accesses.
+ *
  * @since 1.5
  * @author Doug Lea
  * @param <V> The type of object referred to by this reference
  */
 public class AtomicReference<V> implements java.io.Serializable {
+    // 可序列化
     private static final long serialVersionUID = -1848883965231344442L;
-    private static final VarHandle VALUE;
+
+    // 获取 引用属性 的VarHandler 对象
+    private static final VarHandle VarHandler_for_VALUE;
     static {
         try {
-            MethodHandles.Lookup l = MethodHandles.lookup();
-            VALUE = l.findVarHandle(AtomicReference.class, "value", Object.class);
+            MethodHandles.Lookup lookup = MethodHandles.lookup();
+            VarHandler_for_VALUE = lookup.findVarHandle(AtomicReference.class, "value", Object.class);
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
         }
     }
 
-    @SuppressWarnings("serial") // Conditionally serializable
+    // Conditionally serializable
+    // 有条件的去序列化
+    @SuppressWarnings("serial")
     private volatile V value;
 
     /**
      * Creates a new AtomicReference with the given initial value.
+     * 使用给定的值创建原子应用对象。
      *
      * @param initialValue the initial value
      */
@@ -106,21 +113,24 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 1.6
      */
     public final void lazySet(V newValue) {
-        VALUE.setRelease(this, newValue);
+        VarHandler_for_VALUE.setRelease(this, newValue);
     }
 
     /**
+     * cas操作。
+     *
      * Atomically sets the value to {@code newValue}
      * if the current value {@code == expectedValue},
      * with memory effects as specified by {@link VarHandle#compareAndSet}.
      *
      * @param expectedValue the expected value
      * @param newValue the new value
-     * @return {@code true} if successful. False return indicates that
-     * the actual value was not equal to the expected value.
+     * @return {@code true} if successful.
+     *         False return indicates that the actual value
+     *         was not equal to the expected value.
      */
     public final boolean compareAndSet(V expectedValue, V newValue) {
-        return VALUE.compareAndSet(this, expectedValue, newValue);
+        return VarHandler_for_VALUE.compareAndSet(this, expectedValue, newValue);
     }
 
     /**
@@ -141,7 +151,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      */
     @Deprecated(since="9")
     public final boolean weakCompareAndSet(V expectedValue, V newValue) {
-        return VALUE.weakCompareAndSetPlain(this, expectedValue, newValue);
+        return VarHandler_for_VALUE.weakCompareAndSetPlain(this, expectedValue, newValue);
     }
 
     /**
@@ -155,7 +165,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 9
      */
     public final boolean weakCompareAndSetPlain(V expectedValue, V newValue) {
-        return VALUE.weakCompareAndSetPlain(this, expectedValue, newValue);
+        return VarHandler_for_VALUE.weakCompareAndSetPlain(this, expectedValue, newValue);
     }
 
     /**
@@ -167,10 +177,13 @@ public class AtomicReference<V> implements java.io.Serializable {
      */
     @SuppressWarnings("unchecked")
     public final V getAndSet(V newValue) {
-        return (V)VALUE.getAndSet(this, newValue);
+        return (V) VarHandler_for_VALUE.getAndSet(this, newValue);
     }
 
     /**
+     * todo：很有用
+     * 根据当前值返回计算新值、并返回旧值。函数必须是可重复执行而无副作用的。
+     *
      * Atomically updates (with memory effects as specified by {@link
      * VarHandle#compareAndSet}) the current value with the results of
      * applying the given function, returning the previous value. The
@@ -178,8 +191,10 @@ public class AtomicReference<V> implements java.io.Serializable {
      * when attempted updates fail due to contention among threads.
      *
      * @param updateFunction a side-effect-free function
+     *                       V apply(V t)：入参和出参一样的
+     *
      * @return the previous value
-     * @since 1.8
+     *         返回之前的值
      */
     public final V getAndUpdate(UnaryOperator<V> updateFunction) {
         V prev = get(), next = null;
@@ -286,7 +301,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 9
      */
     public final V getPlain() {
-        return (V)VALUE.get(this);
+        return (V) VarHandler_for_VALUE.get(this);
     }
 
     /**
@@ -298,7 +313,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 9
      */
     public final void setPlain(V newValue) {
-        VALUE.set(this, newValue);
+        VarHandler_for_VALUE.set(this, newValue);
     }
 
     /**
@@ -309,7 +324,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 9
      */
     public final V getOpaque() {
-        return (V)VALUE.getOpaque(this);
+        return (V) VarHandler_for_VALUE.getOpaque(this);
     }
 
     /**
@@ -320,7 +335,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 9
      */
     public final void setOpaque(V newValue) {
-        VALUE.setOpaque(this, newValue);
+        VarHandler_for_VALUE.setOpaque(this, newValue);
     }
 
     /**
@@ -331,7 +346,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 9
      */
     public final V getAcquire() {
-        return (V)VALUE.getAcquire(this);
+        return (V) VarHandler_for_VALUE.getAcquire(this);
     }
 
     /**
@@ -342,7 +357,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 9
      */
     public final void setRelease(V newValue) {
-        VALUE.setRelease(this, newValue);
+        VarHandler_for_VALUE.setRelease(this, newValue);
     }
 
     /**
@@ -358,7 +373,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 9
      */
     public final V compareAndExchange(V expectedValue, V newValue) {
-        return (V)VALUE.compareAndExchange(this, expectedValue, newValue);
+        return (V) VarHandler_for_VALUE.compareAndExchange(this, expectedValue, newValue);
     }
 
     /**
@@ -374,7 +389,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 9
      */
     public final V compareAndExchangeAcquire(V expectedValue, V newValue) {
-        return (V)VALUE.compareAndExchangeAcquire(this, expectedValue, newValue);
+        return (V) VarHandler_for_VALUE.compareAndExchangeAcquire(this, expectedValue, newValue);
     }
 
     /**
@@ -390,7 +405,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 9
      */
     public final V compareAndExchangeRelease(V expectedValue, V newValue) {
-        return (V)VALUE.compareAndExchangeRelease(this, expectedValue, newValue);
+        return (V) VarHandler_for_VALUE.compareAndExchangeRelease(this, expectedValue, newValue);
     }
 
     /**
@@ -405,7 +420,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 9
      */
     public final boolean weakCompareAndSetVolatile(V expectedValue, V newValue) {
-        return VALUE.weakCompareAndSet(this, expectedValue, newValue);
+        return VarHandler_for_VALUE.weakCompareAndSet(this, expectedValue, newValue);
     }
 
     /**
@@ -420,7 +435,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 9
      */
     public final boolean weakCompareAndSetAcquire(V expectedValue, V newValue) {
-        return VALUE.weakCompareAndSetAcquire(this, expectedValue, newValue);
+        return VarHandler_for_VALUE.weakCompareAndSetAcquire(this, expectedValue, newValue);
     }
 
     /**
@@ -435,7 +450,7 @@ public class AtomicReference<V> implements java.io.Serializable {
      * @since 9
      */
     public final boolean weakCompareAndSetRelease(V expectedValue, V newValue) {
-        return VALUE.weakCompareAndSetRelease(this, expectedValue, newValue);
+        return VarHandler_for_VALUE.weakCompareAndSetRelease(this, expectedValue, newValue);
     }
 
 }

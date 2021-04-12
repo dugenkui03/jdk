@@ -36,9 +36,10 @@
 package java.util.concurrent;
 
 /**
- * A delayed result-bearing action that can be cancelled.
- * Usually a scheduled future is the result of scheduling
+ * A delayed(延迟的) result-bearing action that can be cancelled.
+ * Usually a scheduled future is the result of scheduling(调度)
  * a task with a {@link ScheduledExecutorService}.
+ * fixme 通常是 ScheduledExecutorService 调度的任务的结果。
  *
  * @since 1.5
  * @author Doug Lea

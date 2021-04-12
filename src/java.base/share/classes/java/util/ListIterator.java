@@ -96,7 +96,10 @@ public interface ListIterator<E> extends Iterator<E> {
 
     /**
      * Returns the previous element in the list and moves the cursor
-     * position backwards.  This method may be called repeatedly to
+     * position backwards.
+     * fixme 返回之前next()的元素、并且将指针前移。
+     *
+     * This method may be called repeatedly to
      * iterate through the list backwards, or intermixed with calls to
      * {@link #next} to go back and forth.  (Note that alternating calls
      * to {@code next} and {@code previous} will return the same

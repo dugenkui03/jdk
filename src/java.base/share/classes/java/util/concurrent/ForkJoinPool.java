@@ -3068,16 +3068,22 @@ public class ForkJoinPool extends AbstractExecutorService {
         /**
          * Possibly blocks the current thread, for example waiting for
          * a lock or condition.
+         * fixme 可能阻塞了一个线程，比如在lock和condition上等待。
          *
          * @return {@code true} if no additional blocking is necessary
          * (i.e., if isReleasable would return true)
+         *         fixme 如果没有阻塞的必要，则返回true。
+         *
          * @throws InterruptedException if interrupted while waiting
          * (the method is not required to do so, but is allowed to)
+         *        fixme 如果在等待的时候线程被中断。
          */
         boolean block() throws InterruptedException;
 
         /**
          * Returns {@code true} if blocking is unnecessary.
+         * fixme 如果阻塞没有必要，则返回true。
+         *
          * @return {@code true} if blocking is unnecessary
          */
         boolean isReleasable();

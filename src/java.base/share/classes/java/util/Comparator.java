@@ -110,8 +110,11 @@ public interface Comparator<T> {
     /**
      * Compares its two arguments for order.  Returns a negative integer,
      * zero, or a positive integer as the first argument is less than, equal
-     * to, or greater than the second.<p>
+     * to, or greater than the second.
+     * fixme
+     *      比较 c1、c2，如果c1<c2、则返回负数，递增排序。
      *
+     * <p>
      * The implementor must ensure that {@code sgn(compare(x, y)) ==
      * -sgn(compare(y, x))} for all {@code x} and {@code y}.  (This
      * implies that {@code compare(x, y)} must throw an exception if and only
@@ -176,6 +179,7 @@ public interface Comparator<T> {
     /**
      * Returns a comparator that imposes the reverse ordering of this
      * comparator.
+     * fixme 逆序
      *
      * @return a comparator that imposes the reverse ordering of this
      *         comparator.
@@ -189,6 +193,11 @@ public interface Comparator<T> {
      * Returns a lexicographic-order comparator with another comparator.
      * If this {@code Comparator} considers two elements equal, i.e.
      * {@code compare(a, b) == 0}, {@code other} is used to determine the order.
+     * fixme 先按照年龄、后按照备份递增排序
+     *     Comparator.comparing(Person::getAge)
+     *     .thenComparing(
+     *          (a,b)->a.getBeifen()-b.getBeifen()
+     *          )
      *
      * <p>The returned comparator is serializable if the specified comparator
      * is also serializable.
@@ -227,7 +236,14 @@ public interface Comparator<T> {
      *
      * @param  <U>  the type of the sort key
      * @param  keyExtractor the function used to extract the sort key
+     *                      fixme 用来转换比较对象的函数，例如 Person::getAge
+     *
      * @param  keyComparator the {@code Comparator} used to compare the sort key
+     *                       fixme 用来比较转换后值的比较器，例如
+     *                          int compare(Integer o1, Integer o2){
+     *                                 return -1(o1-o2);
+     *                          }
+     *
      * @return a lexicographic-order comparator composed of this comparator
      *         and then comparing on the key extracted by the keyExtractor function
      * @throws NullPointerException if either argument is null.
@@ -245,6 +261,9 @@ public interface Comparator<T> {
     /**
      * Returns a lexicographic-order comparator with a function that
      * extracts a {@code Comparable} sort key.
+     * fixme 指定第二权重的比较因素。如下是 将人先按照年龄、后按照备份递增排序：
+     *       Comparator.comparing(Person::getAge)
+     *       .thenComparing(Person::getBeifen)
      *
      * @implSpec This default implementation behaves as if {@code
      *           thenComparing(comparing(keyExtractor))}.
@@ -340,8 +359,9 @@ public interface Comparator<T> {
     }
 
     /**
-     * Returns a comparator that compares {@link Comparable} objects in natural
-     * order.
+     * Returns a comparator that compares {@link Comparable} objects in natural order.
+     * fixme 以自然顺序比较两个可比较对象：a.compareTo(b)
+     *       如果比较对象中存在null、则将空指针。
      *
      * <p>The returned comparator is serializable and throws {@link
      * NullPointerException} when comparing {@code null}.
@@ -363,6 +383,13 @@ public interface Comparator<T> {
      * equal. If both are non-null, the specified {@code Comparator} is used
      * to determine the order. If the specified comparator is {@code null},
      * then the returned comparator considers all non-null values to be equal.
+     * fixme 如果排序的对象可能存在为null的情况，
+     *       则 Comparator.comparing(Person::getAge) 可能空指针异常，
+     *       可使用如下代码、将null排到集合前边
+     *       Comparator.nullsLast(
+     *                 Comparator.comparing(S::getAge)
+     *       )
+     *
      *
      * <p>The returned comparator is serializable if the specified comparator
      * is serializable.
@@ -384,6 +411,7 @@ public interface Comparator<T> {
      * equal. If both are non-null, the specified {@code Comparator} is used
      * to determine the order. If the specified comparator is {@code null},
      * then the returned comparator considers all non-null values to be equal.
+     * fixme 同 nullsFirst，针对元素可能为null的情况
      *
      * <p>The returned comparator is serializable if the specified comparator
      * is serializable.
@@ -403,6 +431,7 @@ public interface Comparator<T> {
      * Accepts a function that extracts a sort key from a type {@code T}, and
      * returns a {@code Comparator<T>} that compares by that sort key using
      * the specified {@link Comparator}.
+     * fixme 将对象转换后，使用指定的比较器做比较。
      *
      * <p>The returned comparator is serializable if the specified function
      * and comparator are both serializable.
@@ -441,6 +470,7 @@ public interface Comparator<T> {
      * Accepts a function that extracts a {@link java.lang.Comparable
      * Comparable} sort key from a type {@code T}, and returns a {@code
      * Comparator<T>} that compares by that sort key.
+     * fixme 使用 keyExtractor 处理过对象后，在做比较
      *
      * <p>The returned comparator is serializable if the specified function
      * is also serializable.
@@ -466,13 +496,19 @@ public interface Comparator<T> {
     {
         Objects.requireNonNull(keyExtractor);
         return (Comparator<T> & Serializable)
-            (c1, c2) -> keyExtractor.apply(c1).compareTo(keyExtractor.apply(c2));
+            (c1, c2) -> {
+                // fixme 使用 keyExtractor 处理过对象后，在做比较
+                U v1 = keyExtractor.apply(c1);
+                U v2 = keyExtractor.apply(c2);
+                return v1.compareTo(v2);
+            };
     }
 
     /**
      * Accepts a function that extracts an {@code int} sort key from a type
      * {@code T}, and returns a {@code Comparator<T>} that compares by that
      * sort key.
+     * fixme 将对象转换成int之后在做比较
      *
      * <p>The returned comparator is serializable if the specified function
      * is also serializable.
@@ -494,6 +530,7 @@ public interface Comparator<T> {
      * Accepts a function that extracts a {@code long} sort key from a type
      * {@code T}, and returns a {@code Comparator<T>} that compares by that
      * sort key.
+     * fixme 将对象转换成long后在做比较
      *
      * <p>The returned comparator is serializable if the specified function is
      * also serializable.
@@ -515,6 +552,7 @@ public interface Comparator<T> {
      * Accepts a function that extracts a {@code double} sort key from a type
      * {@code T}, and returns a {@code Comparator<T>} that compares by that
      * sort key.
+     * fixme 将对象转换成double后做比较
      *
      * <p>The returned comparator is serializable if the specified function
      * is also serializable.

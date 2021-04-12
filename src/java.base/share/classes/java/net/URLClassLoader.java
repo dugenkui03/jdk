@@ -64,6 +64,11 @@ import sun.security.util.SecurityConstants;
  * JAR file.  Any {@code file:} scheme URL that ends with a '/' is assumed to
  * refer to a directory. Otherwise, the URL is assumed to refer to a JAR file
  * which will be opened as needed.
+ *
+ * fixme
+ *      从url指定的资源中加载类，任何 jar: 模式的url被认定为指向一个 jar文件，例如
+ *      jar:http://www.foo.com/bar/baz.jar!/COM/foo/Quux.class
+ *      任何 以 / 结尾的 file: 模式的URL，被认定指向一个文件夹。
  * <p>
  * This class loader supports the loading of classes and resources from the
  * contents of a <a href="../util/jar/JarFile.html#multirelease">multi-release</a>
@@ -101,9 +106,12 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
      *
      * @param      urls the URLs from which to load classes and resources
      * @param      parent the parent class loader for delegation
+     *                    委托的父类加载器；
+     *
      * @throws     SecurityException  if a security manager exists and its
      *             {@code checkCreateClassLoader} method doesn't allow
      *             creation of a class loader.
+     *
      * @throws     NullPointerException if {@code urls} or any of its
      *             elements is {@code null}.
      * @see SecurityManager#checkCreateClassLoader

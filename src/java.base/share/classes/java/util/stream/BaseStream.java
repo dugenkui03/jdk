@@ -54,6 +54,8 @@ import java.util.function.Predicate;
  *
  * @param <T> the type of the stream elements
  * @param <S> the type of the stream implementing {@code BaseStream}
+ *           fixme 咋使用的？
+ *
  * @since 1.8
  * @see Stream
  * @see IntStream
@@ -65,9 +67,10 @@ public interface BaseStream<T, S extends BaseStream<T, S>>
         extends AutoCloseable {
     /**
      * Returns an iterator for the elements of this stream.
+     * fixme 返回该stream的遍历器，终止操作
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal
-     * operation</a>.
+     * <p>This is a <a href="package-summary.html#StreamOps">
+     *     terminal operation</a>.
      *
      * @return the element iterator for this stream
      */
@@ -75,6 +78,7 @@ public interface BaseStream<T, S extends BaseStream<T, S>>
 
     /**
      * Returns a spliterator for the elements of this stream.
+     * fixme 返回该数据流的 Spliterator
      *
      * <p>This is a <a href="package-summary.html#StreamOps">terminal
      * operation</a>.
@@ -95,6 +99,8 @@ public interface BaseStream<T, S extends BaseStream<T, S>>
      * Returns whether this stream, if a terminal operation were to be executed,
      * would execute in parallel.  Calling this method after invoking an
      * terminal stream operation method may yield unpredictable results.
+     * fixme 如果要执行终止操作、返回是否要并行执行。在调用终止操作后在调用此方法、会产生不可预测的结果。
+     * fixme 啥场景、咋用的。
      *
      * @return {@code true} if this stream would execute in parallel if executed
      */
@@ -104,9 +110,9 @@ public interface BaseStream<T, S extends BaseStream<T, S>>
      * Returns an equivalent stream that is sequential.  May return
      * itself, either because the stream was already sequential, or because
      * the underlying stream state was modified to be sequential.
+     * fixme 中间操作：将并行流转换成串行流。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>This is an <a href="package-summary.html#StreamOps">intermediate operation</a>.
      *
      * @return a sequential stream
      */
@@ -116,6 +122,8 @@ public interface BaseStream<T, S extends BaseStream<T, S>>
      * Returns an equivalent stream that is parallel.  May return
      * itself, either because the stream was already parallel, or because
      * the underlying stream state was modified to be parallel.
+     * fixme 返回一个并行的流，如果已经是并行流或者底层的流状态被更新为并行的了，则返回本身。
+     *       中间操作。
      *
      * <p>This is an <a href="package-summary.html#StreamOps">intermediate
      * operation</a>.
@@ -129,6 +137,7 @@ public interface BaseStream<T, S extends BaseStream<T, S>>
      * <a href="package-summary.html#Ordering">unordered</a>.  May return
      * itself, either because the stream was already unordered, or because
      * the underlying stream state was modified to be unordered.
+     * fixme 中间操作：返回一个无序的流。如果已经是无序或者状态标记为无序了、则返回本身。
      *
      * <p>This is an <a href="package-summary.html#StreamOps">intermediate
      * operation</a>.
@@ -138,16 +147,17 @@ public interface BaseStream<T, S extends BaseStream<T, S>>
     S unordered();
 
     /**
-     * Returns an equivalent stream with an additional close handler.  Close
-     * handlers are run when the {@link #close()} method
-     * is called on the stream, and are executed in the order they were
-     * added.  All close handlers are run, even if earlier close handlers throw
+     * Returns an equivalent stream with an additional close handler.
+     * Close handlers are run when the {@link #close()} method is called on the stream,
+     * and are executed in the order they were added.
+     * All close handlers are run, even if earlier close handlers throw
      * exceptions.  If any close handler throws an exception, the first
      * exception thrown will be relayed to the caller of {@code close()}, with
      * any remaining exceptions added to that exception as suppressed exceptions
      * (unless one of the remaining exceptions is the same exception as the
      * first exception, since an exception cannot suppress itself.)  May
      * return itself.
+     * fixme：中间方法，在close()的时候调用，可以添加多个handler、顺序执行、即使前边的
      *
      * <p>This is an <a href="package-summary.html#StreamOps">intermediate
      * operation</a>.

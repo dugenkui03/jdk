@@ -167,6 +167,8 @@ import static java.util.concurrent.Flow.Subscription;
  * }}</pre>
  *
  * @param <T> the published item type
+ *           元素类型
+ *
  * @author Doug Lea
  * @since 9
  */
@@ -536,9 +538,13 @@ public class SubmissionPublisher<T> implements Publisher<T>,
      * item, then this exception is rethrown.
      *
      * @param item the (non-null) item to publish
+     *             fixme 要发布的非空元素
+     *
      * @param onDrop if non-null, the handler invoked upon a drop to a
      * subscriber, with arguments of the subscriber and item; if it
      * returns true, an offer is re-attempted (once)
+     *               fixme
+     *
      * @return if negative, the (negative) number of drops; otherwise
      * an estimate of maximum lag
      * @throws IllegalStateException if closed
@@ -546,7 +552,8 @@ public class SubmissionPublisher<T> implements Publisher<T>,
      * @throws RejectedExecutionException if thrown by Executor
      */
     public int offer(T item,
-                     BiPredicate<Subscriber<? super T>, ? super T> onDrop) {
+                     BiPredicate<Subscriber<? super T>, ? super T> onDrop
+    ) {
         return doOffer(item, 0L, onDrop);
     }
 
@@ -580,20 +587,27 @@ public class SubmissionPublisher<T> implements Publisher<T>,
      * item, then this exception is rethrown.
      *
      * @param item the (non-null) item to publish
+     *             要发布的非空元素
+     *
      * @param timeout how long to wait for resources for any subscriber
      * before giving up, in units of {@code unit}
      * @param unit a {@code TimeUnit} determining how to interpret the
      * {@code timeout} parameter
+     *             超时时间
+     *
      * @param onDrop if non-null, the handler invoked upon a drop to a
      * subscriber, with arguments of the subscriber and item; if it
      * returns true, an offer is re-attempted (once)
+     *
      * @return if negative, the (negative) number of drops; otherwise
-     * an estimate of maximum lag
+     * an estimate(预估) of maximum lag(滞后)
+     *
      * @throws IllegalStateException if closed
      * @throws NullPointerException if item is null
      * @throws RejectedExecutionException if thrown by Executor
      */
-    public int offer(T item, long timeout, TimeUnit unit,
+    public int offer(T item,
+                     long timeout, TimeUnit unit,
                      BiPredicate<Subscriber<? super T>, ? super T> onDrop) {
         long nanos = unit.toNanos(timeout);
         // distinguishes from untimed (only wrt interrupt policy)
@@ -827,10 +841,11 @@ public class SubmissionPublisher<T> implements Publisher<T>,
     }
 
     /**
-     * Returns an estimate of the maximum number of items produced but
-     * not yet consumed among all current subscribers.
+     * Returns an estimate of the maximum number of items
+     * produced but not yet consumed among all current subscribers.
+     * fixme "返回所有当前订阅服务器中已生成但尚未使用的最大项数的估计值。"
      *
-     * @return the estimate
+     * @return the estimate 估值
      */
     public int estimateMaximumLag() {
         int max = 0;
@@ -932,7 +947,7 @@ public class SubmissionPublisher<T> implements Publisher<T>,
     }
 
     /**
-     * A resizable array-based ring buffer with integrated control to
+     * A resizable(可变大小的时候) array-based ring buffer with integrated control to
      * start a consumer task whenever items are available.  The buffer
      * algorithm is specialized for the case of at most one concurrent
      * producer and consumer, and power of two buffer sizes. It relies

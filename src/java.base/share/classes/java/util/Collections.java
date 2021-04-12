@@ -43,6 +43,11 @@ import java.util.stream.StreamSupport;
 import jdk.internal.access.SharedSecrets;
 
 /**
+ * fixme 泛型方法。
+ *       PECS：生产者extend、消费者super；
+ *
+ * todo: 可以看看方法的具体实现、通熟易懂、获益匪浅。
+ *
  * This class consists exclusively of static methods that operate on or return
  * collections.  It contains polymorphic algorithms that operate on
  * collections, "wrappers", which return a new collection backed by a
@@ -119,6 +124,7 @@ public class Collections {
      * <i>mutually comparable</i> (that is, {@code e1.compareTo(e2)}
      * must not throw a {@code ClassCastException} for any elements
      * {@code e1} and {@code e2} in the list).
+     * fixme 升序排列。
      *
      * <p>This sort is guaranteed to be <i>stable</i>:  equal elements will
      * not be reordered as a result of the sort.
@@ -151,6 +157,7 @@ public class Collections {
      * comparable</i> using the specified comparator (that is,
      * {@code c.compare(e1, e2)} must not throw a {@code ClassCastException}
      * for any elements {@code e1} and {@code e2} in the list).
+     * fixme 使用指定的比较器给list元素排序、在当前的集合中。
      *
      * <p>This sort is guaranteed to be <i>stable</i>:  equal elements will
      * not be reordered as a result of the sort.
@@ -182,12 +189,14 @@ public class Collections {
 
     /**
      * Searches the specified list for the specified object using the binary
-     * search algorithm.  The list must be sorted into ascending order
+     * search algorithm.  The list must be sorted into ascending(升序) order
      * according to the {@linkplain Comparable natural ordering} of its
      * elements (as by the {@link #sort(List)} method) prior to making this
      * call.  If it is not sorted, the results are undefined.  If the list
      * contains multiple elements equal to the specified object, there is no
      * guarantee which one will be found.
+     * fixme 在一个list中进行二分查找指定元素。
+     *       list中的元素必须是排序的；如果list中多个元素和指定元素equals、则不保证返回哪个元素。
      *
      * <p>This method runs in log(n) time for a "random access" list (which
      * provides near-constant-time positional access).  If the specified list
@@ -196,7 +205,9 @@ public class Collections {
      * O(n) link traversals and O(log n) element comparisons.
      *
      * @param  <T> the class of the objects in the list
+     *            fixme list中元素类型，返回值不实用 extends/super
      * @param  list the list to be searched.
+     *              fixme list中的元素被消费、是生产者、所以 extends，Comparable的方法比较元素、是消费者、所以super。
      * @param  key the key to be searched for.
      * @return the index of the search key, if it is contained in the list;
      *         otherwise, <code>(-(<i>insertion point</i>) - 1)</code>.  The
@@ -213,9 +224,11 @@ public class Collections {
      */
     public static <T>
     int binarySearch(List<? extends Comparable<? super T>> list, T key) {
+        // 如果是数组或者元素数量小于5000，则使用indexedBinarySearch
         if (list instanceof RandomAccess || list.size()<BINARYSEARCH_THRESHOLD)
             return Collections.indexedBinarySearch(list, key);
         else
+            // 不满足条件则使用 iterator二分查找
             return Collections.iteratorBinarySearch(list, key);
     }
 
@@ -282,13 +295,14 @@ public class Collections {
 
     /**
      * Searches the specified list for the specified object using the binary
-     * search algorithm.  The list must be sorted into ascending order
+     * search algorithm.  The list must be sorted into ascending(升序) order
      * according to the specified comparator (as by the
      * {@link #sort(List, Comparator) sort(List, Comparator)}
      * method), prior to making this call.  If it is
      * not sorted, the results are undefined.  If the list contains multiple
      * elements equal to the specified object, there is no guarantee which one
      * will be found.
+     * fixme 先使用指定的比较器对数据进行排列。
      *
      * <p>This method runs in log(n) time for a "random access" list (which
      * provides near-constant-time positional access).  If the specified list
@@ -310,6 +324,8 @@ public class Collections {
      *         elements in the list are less than the specified key.  Note
      *         that this guarantees that the return value will be &gt;= 0 if
      *         and only if the key is found.
+     *         fixme 如果不包含在list中、则返回-1；
+     *
      * @throws ClassCastException if the list contains elements that are not
      *         <i>mutually comparable</i> using the specified comparator,
      *         or the search key is not mutually comparable with the
@@ -366,9 +382,10 @@ public class Collections {
     }
 
     /**
-     * Reverses the order of the elements in the specified list.<p>
+     * Reverses the order of the elements in the specified list.
+     * fixme 逆序指定列表，运行时间为log(n)。
      *
-     * This method runs in linear time.
+     * <p>This method runs in linear time.
      *
      * @param  list the list whose elements are to be reversed.
      * @throws UnsupportedOperationException if the specified list or
@@ -395,9 +412,10 @@ public class Collections {
     }
 
     /**
-     * Randomly permutes the specified list using a default source of
-     * randomness.  All permutations occur with approximately equal
-     * likelihood.
+     * Randomly permutes(排列、改变...顺序) the specified list using
+     * a default source of randomness.  All permutations(n. 排列) occur
+     * with approximately equal likelihood.
+     * fixme 打散list集合、所有可能的排列出现的可能性相同。
      *
      * <p>The hedge "approximately" is used in the foregoing description because
      * default source of randomness is only approximately an unbiased source
@@ -451,6 +469,8 @@ public class Collections {
      *
      * @param  list the list to be shuffled.
      * @param  rnd the source of randomness to use to shuffle the list.
+     *             fixme 用来打散list的随机定义。
+     *
      * @throws UnsupportedOperationException if the specified list or its
      *         list-iterator does not support the {@code set} operation.
      */
@@ -483,6 +503,7 @@ public class Collections {
      * Swaps the elements at the specified positions in the specified list.
      * (If the specified positions are equal, invoking this method leaves
      * the list unchanged.)
+     * fixme 交换指定位置的元素。
      *
      * @param list The list in which to swap elements.
      * @param i the index of one element to be swapped.
@@ -490,6 +511,7 @@ public class Collections {
      * @throws IndexOutOfBoundsException if either {@code i} or {@code j}
      *         is out of range (i &lt; 0 || i &gt;= list.size()
      *         || j &lt; 0 || j &gt;= list.size()).
+     *         fixme 位置超过元素大小。
      * @since 1.4
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -512,9 +534,10 @@ public class Collections {
 
     /**
      * Replaces all of the elements of the specified list with the specified
-     * element. <p>
+     * element.
+     * fixme 使用指定元素填充list。
      *
-     * This method runs in linear time.
+     * <p> This method runs in linear time.
      *
      * @param  <T> the class of the objects in the list
      * @param  list the list to be filled with the specified element.
@@ -544,6 +567,10 @@ public class Collections {
      * list's size must be greater than or equal to the source list's size.
      * If it is greater, the remaining elements in the destination list are
      * unaffected. <p>
+     * fixme 将元素从源list拷贝到目标list；
+     *       在拷贝之后、被拷贝的元素在目标集合中的下标同源list；
+     *       目标集合的size >= 源集合size：目标集合比较大、则触达不了的位置保留原来的元素，如果目标集合小则抛异常。
+     *
      *
      * This method runs in linear time.
      *
@@ -648,6 +675,12 @@ public class Collections {
     }
 
     /**
+     * fixme: 说明：T extends Object & Comparable<? super T>>
+     *        https://stackoverflow.com/questions/19488357/why-is-t-bounded-by-object-in-the-collections-max-signature
+     *        https://stackoverflow.com/questions/10339338/t-extends-object-e-vs-t-extends-e
+     *        http://www.angelikalanger.com/GenericsFAQ/FAQSections/ProgrammingIdioms.html#FAQ104
+     *
+     *
      * Returns the maximum element of the given collection, according to the
      * <i>natural ordering</i> of its elements.  All elements in the
      * collection must implement the {@code Comparable} interface.
@@ -669,7 +702,9 @@ public class Collections {
      * @throws NoSuchElementException if the collection is empty.
      * @see Comparable
      */
-    public static <T extends Object & Comparable<? super T>> T max(Collection<? extends T> coll) {
+    public static <T extends Object & Comparable<? super T>> // Comparable 获取元素并进行对比、所以是消费者、因此用super
+    T  // 返回值不实用通配符类型：extends、super
+    max(Collection<? extends T> coll) { // coll 保存着需要对比的元素、因此是生产者、使用extends
         Iterator<? extends T> i = coll.iterator();
         T candidate = i.next();
 
@@ -727,6 +762,7 @@ public class Collections {
      * {@code list.size()}, for all values of {@code i} between {@code 0}
      * and {@code list.size()-1}, inclusive.  (This method has no effect on
      * the size of the list.)
+     * fixme 旋转、平移元素。
      *
      * <p>For example, suppose {@code list} comprises{@code  [t, a, n, k, s]}.
      * After invoking {@code Collections.rotate(list, 1)} (or
@@ -826,6 +862,7 @@ public class Collections {
      * in {@code list} such that
      * {@code (oldVal==null ? e==null : oldVal.equals(e))}.
      * (This method has no effect on the size of the list.)
+     * fixme 替换元素。
      *
      * @param  <T> the class of the objects in the list
      * @param list the list in which replacement is to occur.
@@ -886,14 +923,18 @@ public class Collections {
      * such that {@code source.subList(i, i+target.size()).equals(target)},
      * or -1 if there is no such index.  (Returns -1 if
      * {@code target.size() > source.size()})
+     * fixme 返回子串第一次出现的位置。
      *
-     * <p>This implementation uses the "brute force" technique of scanning
+     * <p>This implementation uses the "brute force"(蛮力法) technique of scanning
      * over the source list, looking for a match with the target at each
      * location in turn.
      *
-     * @param source the list in which to search for the first occurrence
-     *        of {@code target}.
+     * @param source the list in which to search for the first occurrence of {@code target}.
+     *               fixme 全集。
+     *
      * @param target the list to search for as a subList of {@code source}.
+     *               fixme 子集。
+     *
      * @return the starting position of the first occurrence of the specified
      *         target list within the specified source list, or -1 if there
      *         is no such occurrence.
@@ -902,15 +943,24 @@ public class Collections {
     public static int indexOfSubList(List<?> source, List<?> target) {
         int sourceSize = source.size();
         int targetSize = target.size();
+        // fixme 比对到这里就该结束了，因为 source 剩下的元素小于 target.size()
         int maxCandidate = sourceSize - targetSize;
 
         if (sourceSize < INDEXOFSUBLIST_THRESHOLD ||
-            (source instanceof RandomAccess&&target instanceof RandomAccess)) {
+                // fixme 如果都是数组、即 get(i) 是o(1)操作，则使用 for_i
+                (source instanceof RandomAccess && target instanceof RandomAccess)) {
+            /**
+             * https://juejin.cn/post/6844903928828706823
+             *      break使用标签：直接退出当前标签标识的循环
+             *      continue使用标签：跳过当前标签所标识h循环的当次循环的剩余语句
+             */
         nextCand:
             for (int candidate = 0; candidate <= maxCandidate; candidate++) {
-                for (int i=0, j=candidate; i<targetSize; i++, j++)
+                for (int i=0, j=candidate; i<targetSize; i++, j++){
+                    // fixme 如果不相等、则继续外层循环
                     if (!eq(target.get(i), source.get(j)))
                         continue nextCand;  // Element mismatch, try next cand
+                }
                 return candidate;  // All elements of candidate matched target
             }
         } else {  // Iterator version of above algorithm
@@ -919,8 +969,10 @@ public class Collections {
             for (int candidate = 0; candidate <= maxCandidate; candidate++) {
                 ListIterator<?> ti = target.listIterator();
                 for (int i=0; i<targetSize; i++) {
+                    // fixme 如果不想等
                     if (!eq(ti.next(), si.next())) {
                         // Back up source iterator to next candidate
+                        // fixme 已经移动了 i 步了，将指针移动到source_iterator、重新对比的时候从第一个元素开始。
                         for (int j=0; j<i; j++)
                             si.previous();
                         continue nextCand;
@@ -1009,11 +1061,16 @@ public class Collections {
      * is serializable.
      *
      * @param  <T> the class of the objects in the collection
-     * @param  c the collection for which an unmodifiable view is to be
-     *         returned.
+     *            fixme 集合中元素类型。生产者 extends。
+     *
+     * @param  c the collection for which an unmodifiable view is to be returned.
+     *           fixme 给当前集合添加不可修改视图、但是该集合还是可修改的。
+     *
      * @return an unmodifiable view of the specified collection.
      */
     public static <T> Collection<T> unmodifiableCollection(Collection<? extends T> c) {
+        // 就是返回一个去掉了修改方法的Collection子类UnmodifiableCollection
+        // 构造参数对象是其唯一组合变量。
         return new UnmodifiableCollection<>(c);
     }
 
@@ -1115,6 +1172,8 @@ public class Collections {
      *
      * The returned set will be serializable if the specified set
      * is serializable.
+     *
+     * fixme 将指定的set转换为不可修改的Set。
      *
      * @param  <T> the class of the objects in the set
      * @param  s the set for which an unmodifiable view is to be returned.
@@ -3017,6 +3076,9 @@ public class Collections {
      * access to the collection takes place through the view, it is
      * <i>guaranteed</i> that the collection cannot contain an incorrectly
      * typed element.
+     * fixme 返回对指定集合的动态的、类型安全的视图。
+     *       任何尝试插入错误类型元素的操作都会导致 ClassCastException。
+     *       如果之前没有任何错误类型的元素、则可以保证后续的操作都不会导致错误类型的元素。
      *
      * <p>The generics mechanism in the language provides compile-time
      * (static) type checking, but it is possible to defeat this mechanism
@@ -3069,8 +3131,7 @@ public class Collections {
      * @return a dynamically typesafe view of the specified collection
      * @since 1.5
      */
-    public static <E> Collection<E> checkedCollection(Collection<E> c,
-                                                      Class<E> type) {
+    public static <E> Collection<E> checkedCollection(Collection<E> c, Class<E> type) {
         return new CheckedCollection<>(c, type);
     }
 
@@ -4256,6 +4317,7 @@ public class Collections {
      * <li>{@link Iterator#remove remove} always throws {@link
      * IllegalStateException}.</li>
      * </ul>
+     * fixme 返回空的迭代器：hasNext-false；next-异常；remove-异常。
      *
      * <p>Implementations of this method are permitted, but not
      * required, to return the same object from multiple invocations.
@@ -4300,6 +4362,7 @@ public class Collections {
      * <li>{@link ListIterator#previousIndex previousIndex} always
      * returns {@code -1}.</li>
      * </ul>
+     * fixme 空list迭代器：hasNext-false;nextIndex-0;previousIndex-(-1),add-异常；
      *
      * <p>Implementations of this method are permitted, but not
      * required, to return the same object from multiple invocations.
@@ -4761,6 +4824,7 @@ public class Collections {
     /**
      * Returns an immutable set containing only the specified object.
      * The returned set is serializable.
+     * fixme 返回只包含一个元素的不可变的Set：
      *
      * @param  <T> the class of the objects in the set
      * @param o the sole object to be stored in the returned set.
@@ -4900,6 +4964,8 @@ public class Collections {
 
     /**
      * @serial include
+     *
+     * 单个元素的、不可修改的、可序列化的单元素集合。
      */
     private static class SingletonList<E>
         extends AbstractList<E>
@@ -4932,6 +4998,10 @@ public class Collections {
         public void forEach(Consumer<? super E> action) {
             action.accept(element);
         }
+
+        /**
+         *  ================================ 修改方法都不能用 ================================
+         */
         @Override
         public boolean removeIf(Predicate<? super E> filter) {
             throw new UnsupportedOperationException();
@@ -4940,6 +5010,10 @@ public class Collections {
         public void replaceAll(UnaryOperator<E> operator) {
             throw new UnsupportedOperationException();
         }
+        /**
+         *  ================================ 修改方法都不能用 ================================
+         */
+
         @Override
         public void sort(Comparator<? super E> c) {
         }
@@ -4956,6 +5030,7 @@ public class Collections {
     /**
      * Returns an immutable map, mapping only the specified key to the
      * specified value.  The returned map is serializable.
+     * fixme 返回包含单个元素的不可变视图、任何修改操作都会造成 UnSupportException。
      *
      * @param <K> the class of the map keys
      * @param <V> the class of the map values
@@ -5091,6 +5166,7 @@ public class Collections {
      * a single reference to the data object).  This method is useful in
      * combination with the {@code List.addAll} method to grow lists.
      * The returned list is serializable.
+     * fixme 返回一个容量为n、但是都指向同一个对象的list。
      *
      * @param  <T> the class of the object to copy and of the objects
      *         in the returned list.
@@ -5268,6 +5344,7 @@ public class Collections {
      * </pre> sorts the array in reverse-lexicographic (alphabetical) order.<p>
      *
      * The returned comparator is serializable.
+     * fixme 返回自然顺序的 逆序比较器。
      *
      * @param  <T> the class of the objects compared by the comparator
      * @return A comparator that imposes the reverse of the <i>natural
@@ -5293,6 +5370,7 @@ public class Collections {
             = new ReverseComparator();
 
         public int compare(Comparable<Object> c1, Comparable<Object> c2) {
+            // fixme 其实就是将  c1.compareTo(c2) 反过来了
             return c2.compareTo(c1);
         }
 
@@ -5311,6 +5389,7 @@ public class Collections {
      * equivalent to {@link #reverseOrder()} (in other words, it returns a
      * comparator that imposes the reverse of the <em>natural ordering</em> on
      * a collection of objects that implement the Comparable interface).
+     * fixme 返回当前比较器的逆序比较器。
      *
      * <p>The returned comparator is serializable (assuming the specified
      * comparator is also serializable or {@code null}).
@@ -5385,6 +5464,7 @@ public class Collections {
      * Returns an enumeration over the specified collection.  This provides
      * interoperability with legacy APIs that require an enumeration
      * as input.
+     * fixme collection -> Enumeration
      *
      * <p>The iterator returned from a call to {@link Enumeration#asIterator()}
      * does not support removal of elements from the specified collection.  This
@@ -5416,6 +5496,7 @@ public class Collections {
      * enumeration.  This method provides interoperability between
      * legacy APIs that return enumerations and new APIs that require
      * collections.
+     * fixme Enumeration -> List。
      *
      * @param <T> the class of the objects returned by the enumeration
      * @param e enumeration providing elements for the returned
@@ -5447,9 +5528,9 @@ public class Collections {
      * specified object.  More formally, returns the number of elements
      * {@code e} in the collection such that
      * {@code Objects.equals(o, e)}.
+     * fixme 返回指定元素在集合中出现的次数。
      *
-     * @param c the collection in which to determine the frequency
-     *     of {@code o}
+     * @param c the collection in which to determine the frequency of {@code o}
      * @param o the object whose frequency is to be determined
      * @return the number of elements in {@code c} equal to {@code o}
      * @throws NullPointerException if {@code c} is null
@@ -5472,6 +5553,7 @@ public class Collections {
     /**
      * Returns {@code true} if the two specified collections have no
      * elements in common.
+     * fixme 判断两个集合是否不相交。
      *
      * <p>Care must be exercised if this method is used on collections that
      * do not comply with the general contract for {@code Collection}.
@@ -5526,6 +5608,7 @@ public class Collections {
         if (c1 instanceof Set) {
             // Use c1 for contains as a Set's contains() is expected to perform
             // better than O(N/2)
+            // fixme 使用Set进行contains
             iterate = c2;
             contains = c1;
         } else if (!(c2 instanceof Set)) {
@@ -5542,6 +5625,7 @@ public class Collections {
                 return true;
             }
 
+            // 遍历数量小的那个
             if (c1size > c2size) {
                 iterate = c2;
                 contains = c1;
@@ -5573,9 +5657,17 @@ public class Collections {
      * </pre>
      *
      * @param  <T> the class of the elements to add and of the collection
+     *            fixme：元素的类型。
+     *
      * @param c the collection into which {@code elements} are to be inserted
+     *          fixme：消费元素的集合、元素会插入到这个集合。
+     *
      * @param elements the elements to insert into {@code c}
+     *                 fixme 被消费的元素。
+     *
      * @return {@code true} if the collection changed as a result of the call
+     * fixme 是否添加了元素。
+     *
      * @throws UnsupportedOperationException if {@code c} does not support
      *         the {@code add} operation
      * @throws NullPointerException if {@code elements} contains one or more
@@ -5588,8 +5680,12 @@ public class Collections {
      */
     @SafeVarargs
     public static <T> boolean addAll(Collection<? super T> c, T... elements) {
+        // T []  tArr = elements; 合法，
+        // 但是创建 new T[], new List<T>[] 和 new List<String>[] 不合法。
+
         boolean result = false;
         for (T element : elements)
+            // 有一次true、则始终为true
             result |= c.add(element);
         return result;
     }
@@ -5602,6 +5698,8 @@ public class Collections {
      * is no need to use this method on a {@link Map} implementation that
      * already has a corresponding {@link Set} implementation (such as {@link
      * HashMap} or {@link TreeMap}).
+     * fixme 返回和该Map同等性能、key顺序和并发性的Set，
+     *       对于使用Set实现的map没有必要使用该方法，例如HashMap 和 TreeMap。
      *
      * <p>Each method invocation on the set returned by this method results in
      * exactly one method invocation on the backing map or its {@code keySet}
@@ -5618,8 +5716,7 @@ public class Collections {
      *        new WeakHashMap&lt;Object, Boolean&gt;());
      * </pre>
      *
-     * @param <E> the class of the map keys and of the objects in the
-     *        returned set
+     * @param <E> the class of the map keys and of the objects in the returned set
      * @param map the backing map
      * @return the set backed by the map
      * @throws IllegalArgumentException if {@code map} is not empty
@@ -5698,6 +5795,7 @@ public class Collections {
      * {@code remove} is mapped to {@code pop} and so on. This
      * view can be useful when you would like to use a method
      * requiring a {@code Queue} but you need Lifo ordering.
+     * fixme 后进先出的队列。
      *
      * <p>Each method invocation on the queue returned by this method
      * results in exactly one method invocation on the backing deque, with

@@ -845,6 +845,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
     * method is composite does not exceed 2<sup>-100</sup>. This method will
     * never skip over a prime when searching: if it returns {@code p}, there
     * is no prime {@code q} such that {@code this < q < p}.
+    * fixme 返回比当前元素大的下一个素数。
     *
     * @return the first integer greater than this {@code BigInteger} that
     *         is probably prime.
@@ -1502,6 +1503,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
 
     /**
      * Returns a BigInteger whose value is {@code (this - val)}.
+     * fixme 减法
      *
      * @param  val value to be subtracted from this BigInteger.
      * @return {@code this - val}
@@ -2394,6 +2396,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
     /**
      * Returns a BigInteger whose value is <code>(this<sup>exponent</sup>)</code>.
      * Note that {@code exponent} is an integer rather than a BigInteger.
+     * fixme 将当前对象作为底数、返回 exponent 次幂的结果
      *
      * @param  exponent exponent to which this BigInteger is to be raised.
      * @return <code>this<sup>exponent</sup></code>
@@ -3737,6 +3740,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
      * {@code false} if it's definitely composite.  If
      * {@code certainty} is &le; 0, {@code true} is
      * returned.
+     * fixme 如果该数可能是素数、则返回true，如果不是则返回false，如果 certainty <= 0则总是返回true。
      *
      * @param  certainty a measure of the uncertainty that the caller is
      *         willing to tolerate: if the call returns {@code true}
@@ -4148,8 +4152,10 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
     }
 
     /**
-     * Converts this BigInteger to an {@code int}.  This
-     * conversion is analogous to a
+     * Converts this BigInteger to an {@code int}.
+     * fixme 将 BigInteger 转换成 int
+     *
+     * This conversion is analogous to a
      * <i>narrowing primitive conversion</i> from {@code long} to
      * {@code int} as defined in
      * <cite>The Java Language Specification</cite>:
@@ -4790,6 +4796,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
      * for lost information.  If the value of this {@code BigInteger}
      * is out of the range of the {@code int} type, then an
      * {@code ArithmeticException} is thrown.
+     * fixme: 如果当前BigInteger对象不超过最大Int值、则返回相应的int值，否则抛异常。
      *
      * @return this {@code BigInteger} converted to an {@code int}.
      * @throws ArithmeticException if the value of {@code this} will

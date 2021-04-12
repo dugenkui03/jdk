@@ -41,6 +41,7 @@ public interface IntBinaryOperator {
 
     /**
      * Applies this operator to the given operands.
+     * 使用两个 操作数、计算一个数据。
      *
      * @param left the first operand
      * @param right the second operand

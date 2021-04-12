@@ -36,19 +36,20 @@
 package java.util.concurrent;
 
 /**
- * A {@link Future} that is {@link Runnable}. Successful execution of
- * the {@code run} method causes completion of the {@code Future}
- * and allows access to its results.
+ * A {@link Future} that is {@link Runnable}. Successful execution of the {@code run} method
+ * causes completion of the {@code Future} and allows access to its results.
+ * fixme 一个可以被线程执行的 Runnable、代表一个异步任务的结果。
+ *
  * @see FutureTask
  * @see Executor
  * @since 1.6
  * @author Doug Lea
+ *
  * @param <V> The result type returned by this Future's {@code get} method
  */
 public interface RunnableFuture<V> extends Runnable, Future<V> {
     /**
-     * Sets this Future to the result of its computation
-     * unless it has been cancelled.
+     * Sets this Future to the result of its computation unless it has been cancelled.
      */
     void run();
 }

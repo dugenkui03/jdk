@@ -48,6 +48,16 @@ import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 
 /**
+ * fixme
+ *      1. iterate 和 generate 可以高无止尽的流：前者元素之间有依赖关系，后者没有；
+ *      1. iterate 和 generate 可以搞无止尽的流：前者元素之间有依赖关系，后者没有；
+ *      2. flatMap 将多个流合并为一个流;
+ *      3. 一个流不能执行两次 终止操作；
+ *      4. 返回流的一般是中间操作、返回其他对象的一般是终止操作。
+ *
+ * todo
+ *      1. reduce和其他；
+ *      2. {@link java.util.stream.Collectors}
  * A sequence of elements supporting sequential and parallel aggregate
  * operations.  The following example illustrates an aggregate operation using
  * {@link Stream} and {@link IntStream}:
@@ -81,6 +91,7 @@ import java.util.function.UnaryOperator;
  * Streams are lazy; computation on the source data is only performed when the
  * terminal operation is initiated, and source elements are consumed only
  * as needed.
+ *
  *
  * <p>A stream implementation is permitted significant latitude in optimizing
  * the computation of the result.  For example, a stream implementation is free
@@ -169,6 +180,8 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     /**
      * Returns a stream consisting of the elements of this stream that match
      * the given predicate.
+     * fixme T 是元素中具体的类，Predicate 参数可使用 T 或者其夫类的方法；
+     *       只要使用了filter、最终返回结果就可能为空、{@link #findFirst} 之后就不能直接 get()
      *
      * <p>This is an <a href="package-summary.html#StreamOps">intermediate
      * operation</a>.
@@ -189,9 +202,13 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * operation</a>.
      *
      * @param <R> The element type of the new stream
+     *           方法泛型，在方法前边声明
+     *
      * @param mapper a <a href="package-summary.html#NonInterference">non-interfering</a>,
      *               <a href="package-summary.html#Statelessness">stateless</a>
      *               function to apply to each element
+     *               ? super T：还是只能使用 T 及其 父类中的方法，返回的是 R 及其具体实现类。
+     *
      * @return the new stream
      */
     <R> Stream<R> map(Function<? super T, ? extends R> mapper);
@@ -199,6 +216,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     /**
      * Returns an {@code IntStream} consisting of the results of applying the
      * given function to the elements of this stream.
+     * fixme: 中间操作-将元素转换为Int类型。
      *
      * <p>This is an <a href="package-summary.html#StreamOps">
      *     intermediate operation</a>.
@@ -213,6 +231,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     /**
      * Returns a {@code LongStream} consisting of the results of applying the
      * given function to the elements of this stream.
+     * 中间操作
      *
      * <p>This is an <a href="package-summary.html#StreamOps">intermediate
      * operation</a>.
@@ -227,6 +246,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     /**
      * Returns a {@code DoubleStream} consisting of the results of applying the
      * given function to the elements of this stream.
+     * 中间操作
      *
      * <p>This is an <a href="package-summary.html#StreamOps">intermediate
      * operation</a>.
@@ -245,6 +265,11 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * {@link java.util.stream.BaseStream#close() closed} after its contents
      * have been placed into this stream.  (If a mapped stream is {@code null}
      * an empty stream is used, instead.)
+     * todo 将多个流合并成一个流:
+     *              Stream.of(
+     *                 Stream.of(1,2,3),
+     *                 Stream.of(4,5,6)
+     *              ).flatMap(x->x).collect(Collectors.toList());
      *
      * <p>This is an <a href="package-summary.html#StreamOps">intermediate
      * operation</a>.
@@ -274,10 +299,14 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * creates a stream of words from that array.
      *
      * @param <R> The element type of the new stream
+     *           结果流元素类型。
+     *
      * @param mapper a <a href="package-summary.html#NonInterference">non-interfering</a>,
      *               <a href="package-summary.html#Statelessness">stateless</a>
      *               function to apply to each element which produces a stream
      *               of new values
+     *               入参是 流元素类型T 的父类，结果是 结果流元素类型 的实现类。
+     *
      * @return the new stream
      */
     <R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper);
@@ -345,6 +374,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     /**
      * Returns a stream consisting of the distinct elements (according to
      * {@link Object#equals(Object)}) of this stream.
+     * fixme 中间操作：返回一个包含不同元素的流、通过 Object.equals 判断。
      *
      * <p>For ordered streams, the selection of distinct elements is stable
      * (for duplicated elements, the element appearing first in the encounter
@@ -374,8 +404,10 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     /**
      * Returns a stream consisting of the elements of this stream, sorted
      * according to natural order.  If the elements of this stream are not
-     * {@code Comparable}, a {@code java.lang.ClassCastException} may be thrown
+     * {@code Comparable}, a {@link java.lang.ClassCastException} may be thrown
      * when the terminal operation is executed.
+     * fixme 调用 元素的Comparable 方法排序，如果 元素 不是可比较的，
+     *       将会抛出 ClassCastException 异常、运行时异常。
      *
      * <p>For ordered streams, the sort is stable.  For unordered streams, no
      * stability guarantees are made.
@@ -390,6 +422,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     /**
      * Returns a stream consisting of the elements of this stream, sorted
      * according to the provided {@code Comparator}.
+     * fixme 使用提供的比较器、对流元素进行排序。
      *
      * <p>For ordered streams, the sort is stable.  For unordered streams, no
      * stability guarantees are made.
@@ -408,6 +441,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * Returns a stream consisting of the elements of this stream, additionally
      * performing the provided action on each element as elements are consumed
      * from the resulting stream.
+     * fixme 中间操作：对比 map、peek使用元素进行额外操作，返回元素仍然是原来的值。
      *
      * <p>This is an <a href="package-summary.html#StreamOps">intermediate
      * operation</a>.
@@ -443,6 +477,9 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     /**
      * Returns a stream consisting of the elements of this stream, truncated
      * to be no longer than {@code maxSize} in length.
+     * fixme: 中间操作：对流按照顺序进行截断。
+     *                Stream.of("1", "2", "3", "4").limit(3).forEach(System.out::print);
+     *                打印 123
      *
      * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
      * stateful intermediate operation</a>.
@@ -472,6 +509,9 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * after discarding the first {@code n} elements of the stream.
      * If this stream contains fewer than {@code n} elements then an
      * empty stream will be returned.
+     * fixme 跳过前n个元素：
+     *              Stream.of("1", "2", "3", "4").skip(3).forEach(System.out::print);
+     *              打印 4
      *
      * <p>This is a <a href="package-summary.html#StreamOps">stateful
      * intermediate operation</a>.
@@ -629,6 +669,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
 
     /**
      * Performs an action for each element of this stream.
+     * fixme 终止操作。
      *
      * <p>This is a <a href="package-summary.html#StreamOps">terminal
      * operation</a>.
@@ -667,6 +708,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
 
     /**
      * Returns an array containing the elements of this stream.
+     * fixme 返回包含该流元素的数组，终止操作。
      *
      * <p>This is a <a href="package-summary.html#StreamOps">terminal
      * operation</a>.
@@ -681,6 +723,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * provided {@code generator} function to allocate the returned array, as
      * well as any additional arrays that might be required for a partitioned
      * execution or for resizing.
+     * fixme 使用给定的 IntFunction 产生一个制定类型的数组
      *
      * <p>This is a <a href="package-summary.html#StreamOps">terminal
      * operation</a>.
@@ -711,6 +754,10 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * <a href="package-summary.html#Associativity">associative</a>
      * accumulation function, and returns the reduced value.  This is equivalent
      * to:
+     *
+     * fixme  R apply(T t, U u)
+     *        T 是上一次执行的结果。
+     *        相关操作：sum、max、min和string_concat 都是该方法的特例，例如 sum == reduce(0,Integer::sum/ a+b);
      * <pre>{@code
      *     T result = identity;
      *     for (T element : this stream)
@@ -914,6 +961,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * {@link #collect(Supplier, BiConsumer, BiConsumer)}, allowing for reuse of
      * collection strategies and composition of collect operations such as
      * multiple-level grouping or partitioning.
+     * fixme 参见 {@link Collectors}
      *
      * <p>If the stream is parallel, and the {@code Collector}
      * is {@link Collector.Characteristics#CONCURRENT concurrent}, and
@@ -952,8 +1000,14 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * }</pre>
      *
      * @param <R> the type of the result
+     *           fixme 结果类型
+     *
      * @param <A> the intermediate accumulation type of the {@code Collector}
+     *           fixme Collector中间聚合类型
+     *
      * @param collector the {@code Collector} describing the reduction
+     *                  fixme 描述 reduction 的收集器
+     *
      * @return the result of the reduction
      * @see #collect(Supplier, BiConsumer, BiConsumer)
      * @see Collectors
@@ -964,6 +1018,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * Returns the minimum element of this stream according to the provided
      * {@code Comparator}.  This is a special case of a
      * <a href="package-summary.html#Reduction">reduction</a>.
+     * fixme 返回使用指定比较器最小的元素、如果没有元素则返回 Optional.empty。
      *
      * <p>This is a <a href="package-summary.html#StreamOps">terminal operation</a>.
      *
@@ -980,6 +1035,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * Returns the maximum element of this stream according to the provided
      * {@code Comparator}.  This is a special case of a
      * <a href="package-summary.html#Reduction">reduction</a>.
+     * fixme：终止操作：使用比较器、返回最大的元素、如果找不到则返回Optional.empty()
      *
      * <p>This is a <a href="package-summary.html#StreamOps">terminal
      * operation</a>.
@@ -989,7 +1045,9 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      *                   {@code Comparator} to compare elements of this stream
      * @return an {@code Optional} describing the maximum element of this stream,
      * or an empty {@code Optional} if the stream is empty
+     *
      * @throws NullPointerException if the maximum element is null
+     *                              如果最大的元素是null、则抛空指针异常。
      */
     Optional<T> max(Comparator<? super T> comparator);
 
@@ -1000,6 +1058,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * <pre>{@code
      *     return mapToLong(e -> 1L).sum();
      * }</pre>
+     * fixme count 是 reduction的一种特殊操作：返回元素个数。
      *
      * <p>This is a <a href="package-summary.html#StreamOps">terminal operation</a>.
      *
@@ -1031,6 +1090,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * predicate.  May not evaluate the predicate on all elements if not
      * necessary for determining the result.  If the stream is empty then
      * {@code false} is returned and the predicate is not evaluated.
+     * fixme 终止操作：判断是否有任何元素符合给定的表达式、如果流为空、则返回false。
      *
      * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
      * terminal operation</a>.
@@ -1052,6 +1112,8 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * May not evaluate the predicate on all elements if not necessary for
      * determining the result.  If the stream is empty then {@code true} is
      * returned and the predicate is not evaluated.
+     * fixme 返回是否所有的元素都符合 谓词参数，如果有不符合的元素、则立即返回。
+     *       可能在执行谓词逻辑的时候抛异常中断。
      *
      * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
      * terminal operation</a>.
@@ -1075,6 +1137,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * May not evaluate the predicate on all elements if not necessary for
      * determining the result.  If the stream is empty then {@code true} is
      * returned and the predicate is not evaluated.
+     * fixme 返回是否所有的元素都不符合给定的谓词、有符合的则立即返回。
      *
      * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
      * terminal operation</a>.
@@ -1097,6 +1160,9 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * Returns an {@link Optional} describing the first element of this stream,
      * or an empty {@code Optional} if the stream is empty.  If the stream has
      * no encounter order, then any element may be returned.
+     * fixme 返回流中第一个元素的 Optional 包装、
+     *       如果流为空则返回结果可能为 Optional.empty()、直接get()的时候就会报错。
+     *
      *
      * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
      * terminal operation</a>.
@@ -1110,12 +1176,13 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     /**
      * Returns an {@link Optional} describing some element of the stream, or an
      * empty {@code Optional} if the stream is empty.
+     * fixme 终止操作：返回元素的任意结果，不保证每次调用都完全相同、但是也不能当作随机选择。
      *
      * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
      * terminal operation</a>.
      *
-     * <p>The behavior of this operation is explicitly nondeterministic; it is
-     * free to select any element in the stream.  This is to allow for maximal
+     * <p>The behavior of this operation is explicitly(明确的) nondeterministic 不确定性;
+     * it is free to select any element in the stream.  This is to allow for maximal
      * performance in parallel operations; the cost is that multiple invocations
      * on the same source may not return the same result.  (If a stable result
      * is desired, use {@link #findFirst()} instead.)
@@ -1141,6 +1208,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
 
     /**
      * Returns an empty sequential {@code Stream}.
+     * fixme 返回一个空流。
      *
      * @param <T> the type of stream elements
      * @return an empty sequential stream
@@ -1151,6 +1219,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
 
     /**
      * Returns a sequential {@code Stream} containing a single element.
+     * fixme 返回包含一个元素的流
      *
      * @param t the single element
      * @param <T> the type of stream elements
@@ -1163,6 +1232,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     /**
      * Returns a sequential {@code Stream} containing a single element, if
      * non-null, otherwise returns an empty {@code Stream}.
+     * fixme 返回一个非空元素流、如果元素是null、则返回empty()
      *
      * @param t the single element
      * @param <T> the type of stream elements
@@ -1172,11 +1242,12 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      */
     public static<T> Stream<T> ofNullable(T t) {
         return t == null ? Stream.empty()
-                         : StreamSupport.stream(new Streams.StreamBuilderImpl<>(t), false);
+                : StreamSupport.stream(new Streams.StreamBuilderImpl<>(t), false);
     }
 
     /**
      * Returns a sequential ordered stream whose elements are the specified values.
+     * fixme 返回一个指定元素的流。
      *
      * @param <T> the type of stream elements
      * @param values the elements of the new stream
@@ -1193,6 +1264,8 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * application of a function {@code f} to an initial element {@code seed},
      * producing a {@code Stream} consisting of {@code seed}, {@code f(seed)},
      * {@code f(f(seed))}, etc.
+     * fixme 产生一个无限的流、开始元素是seed、以后的就是 被f(seed)处理过的数据。
+     *
      *
      * <p>The first element (position {@code 0}) in the {@code Stream} will be
      * the provided {@code seed}.  For {@code n > 0}, the element at position
@@ -1206,7 +1279,10 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * chooses.
      *
      * @param <T> the type of stream elements
+     *           fixme 流元素类型
+     *
      * @param seed the initial element
+     *
      * @param f a function to be applied to the previous element to produce
      *          a new element
      * @return a new sequential {@code Stream}
@@ -1214,7 +1290,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     public static<T> Stream<T> iterate(final T seed, final UnaryOperator<T> f) {
         Objects.requireNonNull(f);
         Spliterator<T> spliterator = new Spliterators.AbstractSpliterator<>(Long.MAX_VALUE,
-               Spliterator.ORDERED | Spliterator.IMMUTABLE) {
+                Spliterator.ORDERED | Spliterator.IMMUTABLE) {
             T prev;
             boolean started;
 
@@ -1240,6 +1316,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * application of the given {@code next} function to an initial element,
      * conditioned on satisfying the given {@code hasNext} predicate.  The
      * stream terminates as soon as the {@code hasNext} predicate returns false.
+     * fixme 以 seed 为种子，产生一个可控的流。非常重要啊、可以自定义流。
      *
      * <p>{@code Stream.iterate} should produce the same sequence of elements as
      * produced by the corresponding for-loop:
@@ -1266,18 +1343,24 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      *
      * @param <T> the type of stream elements
      * @param seed the initial element
+     *             fixme 第一个元素、种子；
+     *
      * @param hasNext a predicate to apply to elements to determine when the
      *                stream must terminate.
+     *                fixme 断言：流什么时候结束。
+     *
      * @param next a function to be applied to the previous element to produce
      *             a new element
+     *             以之前的元素为参数，产生下一个元素。
+     *
      * @return a new sequential {@code Stream}
-     * @since 9
+     * @since 9 注意。
      */
     public static<T> Stream<T> iterate(T seed, Predicate<? super T> hasNext, UnaryOperator<T> next) {
         Objects.requireNonNull(next);
         Objects.requireNonNull(hasNext);
         Spliterator<T> spliterator = new Spliterators.AbstractSpliterator<>(Long.MAX_VALUE,
-               Spliterator.ORDERED | Spliterator.IMMUTABLE) {
+                Spliterator.ORDERED | Spliterator.IMMUTABLE) {
             T prev;
             boolean started, finished;
 
@@ -1323,6 +1406,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * Returns an infinite sequential unordered stream where each element is
      * generated by the provided {@code Supplier}.  This is suitable for
      * generating constant streams, streams of random elements, etc.
+     * fixme 适合产生一个常量流，或者一个随机流。重要：数据之间没有依赖。
      *
      * @param <T> the type of stream elements
      * @param s the {@code Supplier} of generated elements
@@ -1341,10 +1425,14 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * of the input streams are ordered, and parallel if either of the input
      * streams is parallel.  When the resulting stream is closed, the close
      * handlers for both input streams are invoked.
+     * fixme 将第二个流的数据全部拼接到第一个流后边。
+     *       当调用结果流的close时、两个流的 close handler 都会被调用。
+     *
      *
      * <p>This method operates on the two input streams and binds each stream
      * to its source.  As a result subsequent modifications to an input stream
      * source may not be reflected in the concatenated stream result.
+     * fixme 对结果流的操作可能不会反映到参数流中。
      *
      * @implNote
      * Use caution when constructing streams from repeated concatenation.
@@ -1383,6 +1471,13 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     }
 
     /**
+     * fixme
+     *      {@link
+     *             Stream.Builder<Object> builder =
+     *                   Stream.builder().add(1).add(2).add(3);
+     *             builder.accept(4);
+     *             builder.build().forEach(System.out::println);
+     *      }
      * A mutable builder for a {@code Stream}.  This allows the creation of a
      * {@code Stream} by generating elements individually and adding them to the
      * {@code Builder} (without the copying overhead that comes from using

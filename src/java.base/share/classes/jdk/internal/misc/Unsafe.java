@@ -156,6 +156,8 @@ public final class Unsafe {
 
     /**
      * Stores a value into a given Java variable.
+     * fixme 给指定的对象设置变量值。
+     *
      * <p>
      * The first two parameters are interpreted exactly as with
      * {@link #getInt(Object, long)} to refer to a specific
@@ -165,8 +167,8 @@ public final class Unsafe {
      * The variable must be of the same type as the method
      * parameter {@code x}.
      *
-     * @param o Java heap object in which the variable resides, if any, else
-     *        null
+     * @param o Java heap object in which the variable resides(居住/存在), if any, else null
+     *
      * @param offset indication of where the variable resides in a Java heap
      *        object, if any, else a memory address locating the variable
      *        statically
@@ -2103,13 +2105,21 @@ public final class Unsafe {
     @HotSpotIntrinsicCandidate
     public native void putReferenceVolatile(Object o, long offset, Object x);
 
-    /** Volatile version of {@link #getInt(Object, long)}  */
+    /**
+     * Volatile version of {@link #getInt(Object, long)}
+     *
+     * 获取指定元素值。
+     */
     @HotSpotIntrinsicCandidate
-    public native int     getIntVolatile(Object o, long offset);
+    public native int getIntVolatile(Object o, long offset);
 
-    /** Volatile version of {@link #putInt(Object, long, int)}  */
+    /**
+     * Volatile version of {@link #putInt(Object, long, int)}
+     *
+     * 具有 volatile 语义的 putInt(object,offSet,newValue)
+     */
     @HotSpotIntrinsicCandidate
-    public native void    putIntVolatile(Object o, long offset, int x);
+    public native void putIntVolatile(Object o, long offset, int x);
 
     /** Volatile version of {@link #getBoolean(Object, long)}  */
     @HotSpotIntrinsicCandidate
@@ -2263,7 +2273,11 @@ public final class Unsafe {
         putCharVolatile(o, offset, x);
     }
 
-    /** Release version of {@link #putIntVolatile(Object, long, int)} */
+    /**
+     * Release version of {@link #putIntVolatile(Object, long, int)}
+     *
+     * 具有 volatile 语义的 putInt(object,offSet,newValue)
+     */
     @HotSpotIntrinsicCandidate
     public final void putIntRelease(Object o, long offset, int x) {
         putIntVolatile(o, offset, x);
@@ -2688,23 +2702,32 @@ public final class Unsafe {
     }
 
     /**
-     * Atomically exchanges the given value with the current value of
-     * a field or array element within the given object {@code o}
-     * at the given {@code offset}.
+     * Atomically exchanges the given value with the current value of a field
+     * or array element within the given object {@code o} at the given {@code offset}.
+     * fixme
+     *      使用给定的值、原子的替换当前值，该值可能是一个对象的字段、或者是数组元素。
      *
      * @param o object/array to update the field/element in
+     *          需要更新的字段/元素所在的的对象/数组
+     *
      * @param offset field/element offset
+     *               字段/元素 偏移量
+     *
      * @param newValue new value
+     *                 新值
+     *
      * @return the previous value
-     * @since 1.8
+     *         旧值
      */
     @HotSpotIntrinsicCandidate
     public final int getAndSetInt(Object o, long offset, int newValue) {
-        int v;
+        int oldValueForReturn;
         do {
-            v = getIntVolatile(o, offset);
-        } while (!weakCompareAndSetInt(o, offset, v, newValue));
-        return v;
+            oldValueForReturn = getIntVolatile(o, offset);
+        }
+        // 如果CAS更新旧值成功、则返回旧值。
+        while (!weakCompareAndSetInt(o, offset, oldValueForReturn, newValue));
+        return oldValueForReturn;
     }
 
     @ForceInline
@@ -3237,14 +3260,15 @@ public final class Unsafe {
     }
 
     /**
-     * Atomically replaces the current value of a field or array element within
-     * the given object with the result of bitwise AND between the current value
-     * and mask.
+     * "用当前值和掩码之间按位与的结果以原子方式替换给定对象内字段或数组元素的当前值。"
      *
-     * @param o object/array to update the field/element in
-     * @param offset field/element offset
-     * @param mask the mask value
-     * @return the previous value
+     * Atomically replaces the current value of a field or array element within the given object
+     * with the result of bitwise AND between the current value and mask.
+     *
+     * @param o object/array to update the field/element in 包含要被更新的 字段/元素 的 对象/数组
+     * @param offset field/element offset 字段/元素 的偏移量
+     * @param mask the mask value 掩码值
+     * @return the previous value 返回之前的值
      * @since 9
      */
     @ForceInline
@@ -3252,8 +3276,7 @@ public final class Unsafe {
         int current;
         do {
             current = getIntVolatile(o, offset);
-        } while (!weakCompareAndSetInt(o, offset,
-                                                current, current & mask));
+        } while (!weakCompareAndSetInt(o, offset, current, current & mask));
         return current;
     }
 

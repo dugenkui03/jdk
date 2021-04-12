@@ -31,15 +31,19 @@ import java.util.function.Supplier;
 /**
  * Low-level utility methods for creating and manipulating streams.
  *
- * <p>This class is mostly for library writers presenting stream views
+ * <p>This class is mostly for(主要是为了) library writers presenting(呈现) stream views
  * of data structures; most static stream methods intended for end users are in
  * the various {@code Stream} classes.
+ *
+ * <p> fixme 创建和操作流的工具方法：该类主要是为lib作者提供数据结构的流视图。
+ *           大多数面向最终用户的静态流方法都在各种各样的 Stream相关类 中。
  *
  * @since 1.8
  */
 public final class StreamSupport {
 
     // Suppresses default constructor, ensuring non-instantiability.
+    // 私有化构造参数、确认其不可实例化
     private StreamSupport() {}
 
     /**
@@ -249,8 +253,10 @@ public final class StreamSupport {
     }
 
     /**
-     * Creates a new sequential or parallel {@code DoubleStream} from a
+     * Creates a new sequential or parallel {@link DoubleStream} from a
      * {@code Spliterator.OfDouble}.
+     * fixme
+     *      创建一个 DoubleStream
      *
      * <p>The spliterator is only traversed, split, or queried for estimated size
      * after the terminal operation of the stream pipeline commences.
